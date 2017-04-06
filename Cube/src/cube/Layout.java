@@ -52,7 +52,7 @@ public class Layout {
 		for (int z = 0;z<d();z++) {
 			for (int y = 0;y<h();y++) {
 				for (int x = 0;x<w();x++) {
-					cloneLayout[z][y][x] = layout[y][z][x];
+					cloneLayout[z][y][x] = layout[z][y][x];
 				}
 			}
 		}
@@ -83,6 +83,18 @@ public class Layout {
 		return layout[0][0].length;
 	}
 
+	public boolean equals(Layout that) {
+		if (this.d()!=that.d()||this.h()!=that.h()||this.w()!=that.w()) return false;
+		for (int z = 0;z<this.d();z++) {
+			for (int y = 0;y<this.h();y++) {
+				for (int x = 0;x<this.w();x++) {
+					if (this.get(x, y, z)!=that.get(x, y, z)) return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder str = new StringBuilder();
@@ -93,7 +105,10 @@ public class Layout {
 				}
 				str.append("\n");
 			}
-			if (z<d()-1) str.append("-\n");
+			if (z<d()-1) {
+				for (int i = 0;i<w();i++) str.append("-");
+				str.append("\n");
+			}
 		}
 		return str.toString();
 	}
