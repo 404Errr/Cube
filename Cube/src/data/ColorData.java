@@ -1,17 +1,17 @@
 package data;
 
 public interface ColorData {
-	int R_COLOR = 1;
-	int G_COLOR = 1;
-	int W_COLOR = 1;
-	int Y_COLOR = 1;
-	int U_COLOR = 1;
-	int O_COLOR = 1;
-	int P_COLOR = 1;
-	int T_COLOR = 1;
-	int K_COLOR = 1;
-	int L_COLOR = 1;
-	int V_COLOR = 1;
-	int B_COLOR = 1;
-	int M_COLOR = 1;
+	int BROWN_COLOR = 1;
+	int CYAN_COLOR = 2;
+	int ORANGE_COLOR = 3;
+	int RED_COLOR = 4;
+	int WHITE_COLOR = 5;
+	int GREEN_COLOR = 6;
+//	int U_COLOR = 7;
+//	int T_COLOR = 8;
+//	int K_COLOR = 9;
+//	int L_COLOR = 10;
+//	int V_COLOR = 11;
+//	int B_COLOR = 12;
+//	int M_COLOR = 13;
 }
