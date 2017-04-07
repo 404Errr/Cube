@@ -4,8 +4,9 @@ public interface ToSolve {
 	public static int[][][][] getUnsolved() {
 		return PIECES1;
 	}
+	//z layers are back to front
 
-	int[][][] SIDES = {
+	int[][][] SIDES6 = {
 			{
 				{0,0,0},
 				{0,3,0},

@@ -22,9 +22,7 @@ public class Piece implements MainData {
 
 	public void generateLayouts() {
 		for (int o = 0;o<6;o++) {
-			if (o>0&&o<5) layout.rotate(0, 1, 0);//1-4
-			if (o>=4) layout.rotate(1, 0, 0);//4-5
-			if (o==5) layout.rotate(1, 0, 0);//5
+			layout.rotate((o==4)?1:(o==5)?2:0, (o>=1&&o<=4)?1:0, 0);
 			for (int r = 0;r<4;r++) {
 				layout.rotate(0, 0, 1);
 				layouts.add(layout.clone());
