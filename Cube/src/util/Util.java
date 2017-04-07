@@ -35,4 +35,19 @@ public class Util {
 		array[j] = temp;
 		return array;
 	}
+
+	public static <T> List<T> order(List<T> list, int[] order) {
+		List<T> newList = new ArrayList<>();
+		for (int i = 0;i<order.length;i++) {
+			newList.add(list.get(order[i]));
+		}
+		return newList;
+	}
 }
+
+
+
+
+
+
+

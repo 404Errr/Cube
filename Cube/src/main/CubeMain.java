@@ -17,6 +17,7 @@ public class CubeMain {
 //			if (input.length()>0&&!Character.isAlphabetic(input.charAt(0))) break;
 ////			str.append("\'"+input.charAt(0)+"\', ");
 //			str.append("int "+input.charAt(0)+"_COLOR = "+i+";\n");
+//			i++;
 //		}
 //		scan.close();
 //		System.out.println(str.toString());
