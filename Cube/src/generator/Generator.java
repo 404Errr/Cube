@@ -1,17 +1,38 @@
 package generator;
 
 public class Generator {
+	private static final List<Integer> moveOrder = new ArrayList<>(0, 1, 2, 3, 4, 5);
+	private static Cube cube = new Cube();
+	private static Pointer currentPointer = new Pointer(0, 0, 0);
 	
+	public static void main(String[] args) {
+		
+	}
 
+	public static void generate() {
+		
+		int color = 1;
+		int cubieCount = 0;
+		while (!cube.full()) {
+			movePointer();
+		}
+	}
 
-
-
+	public void movePointer() {
+		Collections.shuffle(moveOrder);
+		int i = 0;
+		boolean failed;
+						
+		while (i<moveOrder.size()) {
+			Pointer tempPointer = currentPointer.getOffset(moveOrder(i));
+			//if () {}
+			i++;
+		}
+	}
 
 }
 
-class Pointer implements GeneratorData {
-	
-	
+class Pointer implements GeneratorData {	
 	private int x, y, z;
 	
 	public Pointer(int x, int y, int z) {
@@ -31,7 +52,7 @@ class Pointer implements GeneratorData {
 		case NY:
 			return new Pointer(x, y-1, z);
 		case NZ:
-			return new Pointer(x, y, z-1);
+		return new Pointer(x, y, z-1);
 		}
 	}
 	
@@ -42,20 +63,49 @@ class Pointer implements GeneratorData {
 	}
 }
 					
-class Cube {
-	
-	
+class Cube implements GeneratorData {
 	private int[][][] cubies;
 	private boolean[][][] added;
+	int addedCount;
 	
 	public Cube() {
-		
+		reset();
 	}
 
+	public void reset() {
+		cubies = new int[SIZE][SIZE][SIZE];
+		added = new boolean[SIZE][SIZE][SIZE];
+		addedCount = 0;
+	}
 
+	public void add(int x, int y, int z, int val) {
+		cubies[z][y][x] = val;
+		added[z][y][x] = true;
+	}
+	
+	public int get(int x, int y, int z) {
+		return cubies[z][y][x];
+	}
 
-
-
+	public boolean added(int x, int y, int z) {
+		return added[z][y][x];
+	}
+	
+	public boolean full() {
+		return addedCount==d()*h()*w();
+	}
+	
+	public int d() {
+		return cubies.length;
+	}
+	
+	public int h() {
+		return cubies[0].length;
+	}
+	
+	public int w() {
+		return cubies[0][0].length;
+	}
 }
 
 
