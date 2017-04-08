@@ -23,19 +23,19 @@ public class Cube implements GeneratorData {
 		return cubies[z][y][x];
 	}
 
-	public boolean occupied(Pointer pointer) {
+	public boolean isOccupied(Pointer pointer) {
 		return cubies[pointer.getZ()][pointer.getY()][pointer.getX()]!=0;
 	}
 
-	public boolean occupied(int x, int y, int z) {
+	public boolean isOccupied(int x, int y, int z) {
 		return cubies[z][y][x]!=0;
 	}
 
-	public boolean full() {
+	public boolean isFull() {
 		for (int z = 0;z<d();z++) {
 			for (int y = 0;y<h();y++) {
 				for (int x = 0;x<w();x++) {
-					if (!occupied(x, y, z)) return false;
+					if (!isOccupied(x, y, z)) return false;
 				}
 			}
 		}
@@ -70,6 +70,10 @@ public class Cube implements GeneratorData {
 			}
 		}
 		return str.toString();
+	}
+
+	public boolean inBounds(int x, int y, int z) {
+		return x>=0&&y>=0&&z>=0&&x<w()&&y<h()&&z<d();
 	}
 
 	public boolean inBounds(Pointer pointer) {
