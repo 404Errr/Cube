@@ -1,133 +1,79 @@
 package generator;
 
-public class Generator {
-	private static final List<Integer> moveOrder = new ArrayList<>(0, 1, 2, 3, 4, 5);
-	private static Cube cube = new Cube();
-	private static Pointer currentPointer = new Pointer(0, 0, 0);
-	
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+import java.util.Stack;
+
+public class Generator implements GeneratorData {
+	private static Cube cube;
+	private static Pointer currentPointer;
+
 	public static void main(String[] args) {
-		
+		generate();
+		System.out.println(cube);
+		checkDims();
 	}
 
-	public static void generate() {
-		
+	private static void generate() {
+		cube = new Cube();
+		currentPointer = new Pointer(0, 0, 0);
 		int color = 1;
 		int cubieCount = 0;
 		while (!cube.full()) {
-			movePointer();
+			boolean couldMove = false;
+			Stack<int[]> moves = new Stack<>();
+			moves.addAll(Arrays.asList(new int[] {1, 0, 0}, new int[] {0, 1, 0}, new int[] {0, 0, 1}, new int[] {-1, 0, 0}, new int[] {0, -1, 0}, new int[] {0, 0, -1}));
+			Collections.shuffle(moves);
+			while (true) {
+				if (moves.isEmpty()) break;
+				int[] move = moves.pop();
+				Pointer tempPointer = currentPointer.getOffset(move[0], move[1], move[2]);
+				if (cube.inBounds(tempPointer)&&((cube.get(tempPointer)==color&&new Random().nextInt(3)==0)||!cube.occupied(tempPointer))) {
+					currentPointer = tempPointer;
+					couldMove = true;
+					break;
+				}
+			}
+			if (!couldMove||color>PIECE_COUNT) {
+				generate();
+				return;
+			}
+			if (cube.get(currentPointer)!=color) {
+				cubieCount++;
+				cube.add(currentPointer, color);
+			}
+			if (cubieCount>=new Random().nextInt(3)+4) {
+				color++;
+				cubieCount = 0;
+			}
+//			System.out.println(cube+"\n"+currentPointer);
 		}
 	}
 
-	public void movePointer() {
-		Collections.shuffle(moveOrder);
-		int i = 0;
-		boolean failed;
-						
-		while (i<moveOrder.size()) {
-			Pointer tempPointer = currentPointer.getOffset(moveOrder(i));
-			//if () {}
-			i++;
+	hey look over here!!!
+	private static void checkDims() {//TODO
+		List<List<Integer>> xAxis = new ArrayList<>(), yAxis = new ArrayList<>(), zAxis = new ArrayList<>();
+		for (int i = 0;i<SIZE;i++) {
+			xAxis.add(new ArrayList<>());
+			yAxis.add(new ArrayList<>());
+			zAxis.add(new ArrayList<>());
 		}
-	}
-
-}
-
-class Pointer implements GeneratorData {	
-	private int x, y, z;
-	
-	public Pointer(int x, int y, int z) {
-		set(x, y, z);
-	}
-	
-	public Pointer getOffset(int direction) {
-		switch (direction) {
-		case PX:
-			return new Pointer(x+1, y, z);
-		case PY:
-			return new Pointer(x, y+1, z);
-		case PZ:
-			return new Pointer(x, y, z+1);
-		case NX:
-			return new Pointer(x-1, y, z);
-		case NY:
-			return new Pointer(x, y-1, z);
-		case NZ:
-		return new Pointer(x, y, z-1);
+		for (int z = 0;z<SIZE;z++) {
+			for (int y = 0;y<SIZE;y++) {
+				for (int x = 0;x<SIZE;x++) {
+					int cubie = cube.get(x, y, z);
+					if (!xAxis.get(x).contains(cubie)) xAxis.get(x).add(cubie);
+					if (!yAxis.get(y).contains(cubie)) yAxis.get(y).add(cubie);
+					if (!zAxis.get(z).contains(cubie)) zAxis.get(z).add(cubie);
+				}
+			}
 		}
-	}
-	
-	public void set(int x, int y, int z) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
+		for (int i = 0;i<xAxis.size();i++) System.out.println(xAxis.get(i));
+		for (int i = 0;i<yAxis.size();i++) System.out.println(yAxis.get(i));
+		for (int i = 0;i<zAxis.size();i++) System.out.println(zAxis.get(i));
 	}
 }
-					
-class Cube implements GeneratorData {
-	private int[][][] cubies;
-	private boolean[][][] added;
-	int addedCount;
-	
-	public Cube() {
-		reset();
-	}
-
-	public void reset() {
-		cubies = new int[SIZE][SIZE][SIZE];
-		added = new boolean[SIZE][SIZE][SIZE];
-		addedCount = 0;
-	}
-
-	public void add(int x, int y, int z, int val) {
-		cubies[z][y][x] = val;
-		added[z][y][x] = true;
-	}
-	
-	public int get(int x, int y, int z) {
-		return cubies[z][y][x];
-	}
-
-	public boolean added(int x, int y, int z) {
-		return added[z][y][x];
-	}
-	
-	public boolean full() {
-		return addedCount==d()*h()*w();
-	}
-	
-	public int d() {
-		return cubies.length;
-	}
-	
-	public int h() {
-		return cubies[0].length;
-	}
-	
-	public int w() {
-		return cubies[0][0].length;
-	}
-}
-
-
-
-
-
-interface GeneratorData {
-	int SIZE = 3;
-	
-	int PX = 0, PY = 1, PZ = 2, NX = 3, NY = 4, NZ = 5;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
 
