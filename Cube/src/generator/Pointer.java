@@ -1,5 +1,7 @@
 package generator;
 
+import data.GeneratorData;
+
 public class Pointer implements GeneratorData {
 	private int x, y, z;
 

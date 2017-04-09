@@ -2,6 +2,7 @@ package data;
 
 public interface ToSolve {
 	public static int[][][][] getUnsolved() {
+		//TODO load from file
 		return PIECES1;
 	}
 	//z layers are back to front

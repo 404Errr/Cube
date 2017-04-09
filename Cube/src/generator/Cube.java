@@ -1,5 +1,7 @@
 package generator;
 
+import data.GeneratorData;
+
 public class Cube implements GeneratorData {
 	private int[][][] cubies;
 

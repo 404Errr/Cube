@@ -1,4 +1,4 @@
-package cube;
+package solver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +14,10 @@ public class Piece implements MainData {
 		layouts = new ArrayList<>();
 		generateLayouts();
 
-		System.out.println(layouts.size()+"\t\t-----");
-		for (int i = 0;i<layouts.size();i++) {
-			System.out.println(layouts.get(i));
-		}
+//		System.out.println(layouts.size()+"\t\t-----");
+//		for (int i = 0;i<layouts.size();i++) {
+//			System.out.println(layouts.get(i));
+//		}
 	}
 
 	public void generateLayouts() {

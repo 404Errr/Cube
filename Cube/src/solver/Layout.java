@@ -1,4 +1,4 @@
-package cube;
+package solver;
 
 public class Layout {
 	private int[][][] layout;
