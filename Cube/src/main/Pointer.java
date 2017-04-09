@@ -1,4 +1,4 @@
-package generator;
+package main;
 
 import data.GeneratorData;
 
@@ -9,7 +9,7 @@ public class Pointer implements GeneratorData {
 		set(x, y, z);
 	}
 
-	public Pointer getOffset(int xO, int yO, int zO) {
+	public Pointer getMoved(int xO, int yO, int zO) {
 		return new Pointer(x+xO, y+yO, z+zO);
 	}
 

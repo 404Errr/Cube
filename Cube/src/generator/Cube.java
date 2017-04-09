@@ -1,6 +1,7 @@
 package generator;
 
 import data.GeneratorData;
+import main.Pointer;
 
 public class Cube implements GeneratorData {
 	private int[][][] cubies;

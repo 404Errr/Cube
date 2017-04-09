@@ -1,7 +1,5 @@
 package main;
 
-import java.util.Arrays;
-
 import data.MainData;
 
 public class Layout implements MainData {
@@ -12,25 +10,17 @@ public class Layout implements MainData {
 	}
 
 	public void trim() {
-		int[] tFR = {0, 0, 0}, dBL = {d(), h(), w()};//z, y, x
+		int[] tFR = {d(), h(), w()}, dBL = {0, 0, 0};//z, y, x
 		for (int z = 0;z<d();z++) {
 			for (int y = 0;y<h();y++) {
 				for (int x = 0;x<w();x++) {
 					if (cubies[z][y][x]!=0) {
-						dBL[X] = x;
-						dBL[Y] = y;
-						dBL[Z] = z;
-					}
-				}
-			}
-		}
-		for (int z = d()-1;z>=0;z--) {
-			for (int y = h()-1;y>=0;y--) {
-				for (int x = w()-1;x>=0;x--) {
-					if (cubies[z][y][x]!=0) {
-						tFR[X] = x;
-						tFR[Y] = y;
-						tFR[Z] = z;
+						if (z>dBL[Z]) dBL[Z] = z;
+						if (y>dBL[Y]) dBL[Y] = y;
+						if (x>dBL[X]) dBL[X] = x;
+						if (z<tFR[Z]) tFR[Z] = z;
+						if (y<tFR[Y]) tFR[Y] = y;
+						if (x<tFR[X]) tFR[X] = x;
 					}
 				}
 			}
@@ -39,13 +29,11 @@ public class Layout implements MainData {
 		for (int z = 0;z<trimedCubies.length;z++) {
 			for (int y = 0;y<trimedCubies[0].length;y++) {
 				for (int x = 0;x<trimedCubies[0][0].length;x++) {
-					trimedCubies[z][y][x] = cubies[z+tFR[Z]][y+tFR[Y]][x+tFR[X]];//FIXME
-				}hey look over here!!!
+					trimedCubies[z][y][x] = cubies[z+tFR[Z]][y+tFR[Y]][x+tFR[X]];
+				}
 			}
 		}
 		cubies = trimedCubies;
-		System.out.println("tfr: "+Arrays.toString(tFR));
-		System.out.println("dbl: "+Arrays.toString(dBL));
 	}
 
 	public void rotate(int xRotations, int yRotations, int zRotations) {//FIXME
@@ -79,7 +67,7 @@ public class Layout implements MainData {
 			for (int z = 0;z<h();z++) {
 				for (int y = 0;y<d();y++) {
 					for (int x = 0;x<w();x++) {
-						rotated[z][y][x] = cubies[h()-y-1][z][x];
+						rotated[z][y][x] = cubies[y][z][w()-1-x];
 					}
 				}
 			}

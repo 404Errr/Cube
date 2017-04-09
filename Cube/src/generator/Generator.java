@@ -9,24 +9,25 @@ import java.util.Stack;
 
 import data.GeneratorData;
 import main.Layout;
+import main.Pointer;
 
 public class Generator implements GeneratorData {
 	private static Cube cube;
 	private static Pointer currentPointer;
 	private static boolean print;
 	private static StringBuilder log;
-	private static final boolean MAKE_PIECES = true, HIDE_SOLUTION = false, PRINT_LOG_STUFF = false;
+	private static final boolean MAKE_PIECES = true, HIDE_SOLUTION = true, PRINT_LOG_STUFF = false;
 
 	public static void generate() {
 		log = new StringBuilder();
 		gen();
 		if (PRINT_LOG_STUFF) {
 			print = true;
-			checkValid();
+			isValid();
 		}
 		log.append("\n"+cube);
 		if (MAKE_PIECES==new Boolean(true)) {
-			if (HIDE_SOLUTION==new Boolean(true)) for (int i = 0;i<25;i++) log.append("\n");
+			if (HIDE_SOLUTION==new Boolean(true)) for (int i = 0;i<15;i++) log.append("\n");
 			makePieces();
 		}
 		System.out.println(log.toString());
@@ -42,7 +43,7 @@ public class Generator implements GeneratorData {
 				reset = false;
 				addedColors = new ArrayList<>();
 				cube = new Cube();
-				currentPointer = new Pointer(0, 0, 0);
+				currentPointer = new Pointer(SIZE/2, SIZE/2, SIZE/2);
 				color = 1;
 				cubieCount = 0;
 			}
@@ -52,7 +53,7 @@ public class Generator implements GeneratorData {
 			boolean couldMove = false;
 			while (!moves.isEmpty()) {
 				int[] move = moves.pop();
-				Pointer tempPointer = currentPointer.getOffset(move[0], move[1], move[2]);
+				Pointer tempPointer = currentPointer.getMoved(move[0], move[1], move[2]);
 				if (cube.inBounds(tempPointer)&&((cube.get(tempPointer)==color&&new Random().nextInt(3)==0)||!cube.isOccupied(tempPointer))) {
 					currentPointer = tempPointer;
 					couldMove = true;
@@ -73,7 +74,7 @@ public class Generator implements GeneratorData {
 				cubieCount = 0;
 			}
 			full = cube.isFull();
-			if (full&&!checkValid()) reset = true;
+			if (full&&!isValid()) reset = true;
 		} while (reset||!full);
 	}
 
@@ -81,14 +82,14 @@ public class Generator implements GeneratorData {
 		return cubieCount>=new Random().nextInt(PIECE_SIZE_MAX-PIECE_SIZE_MIN+1)+PIECE_SIZE_MIN;
 	}
 
-	private static boolean checkValid() {
+	private static boolean isValid() {
 		boolean flat = hasFlat();
 		boolean boring = isBoring();
 		boolean clusters3D = has3DClusters();
 		boolean clusters2D = has2DClusters();
 //		log.append("flat: "+flat+"\tboring: "+boring+"\tclusters3D: "+clusters3D+"\tclusters2D: "+clusters2D+"\n");
-		return true;//FIXME
-//		return !flat&&!boring&!clusters3D&&!clusters2D;
+//		return true;
+		return !flat&&!boring&!clusters3D&&!clusters2D;
 	}
 
 	private static boolean has2DClusters() {

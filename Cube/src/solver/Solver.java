@@ -1,11 +1,45 @@
 package solver;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import data.MainData;
+import data.ToSolve;
+import main.Layout;
 
 public class Solver implements MainData {
-//	private static Cube cube;
 
 	public static void solve() {
+		int[][][][] rawPieceLayouts = ToSolve.getUnsolved();
+		List<Layout> pieces = new ArrayList<>();
+		for (int p = 0;p<rawPieceLayouts.length;p++) {
+			pieces.addAll(Piece.getAllPermutations(new Layout(rawPieceLayouts[p])));
+		}
+		System.out.println(pieces);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	}
+
+
+
+
+//	public static void solve() {
+//		System.out.println("no solution found.");
+//
 //		int[][][][] pieceLayouts = ToSolve.getUnsolved();
 ////		new Piece(ToSolve.SIDES6);
 //		List<Piece> pieces = new ArrayList<>();
@@ -78,7 +112,7 @@ public class Solver implements MainData {
 //		}
 //		return;
 //	}
-}
+//}
 
 
 
