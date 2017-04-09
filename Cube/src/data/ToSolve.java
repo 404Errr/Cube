@@ -4,8 +4,31 @@ public interface ToSolve {
 	public static int[][][][] getUnsolved() {
 		//TODO load from file
 		return PIECES1;
+//		return TEST;
 	}
 	//z layers are back to front
+
+	int[][][][] TEST = {
+			{
+				{
+					{1,1,1},
+					{1,1,1},
+					{1,1,1},
+				},
+				{
+					{1,1,1},
+					{1,1,1},
+					{1,1,1},
+				},
+			},
+			{
+				{
+					{2,2,2},
+					{2,2,2},
+					{2,2,2},
+				},
+			},
+	};
 
 	int[][][] SIDES6 = {
 			{

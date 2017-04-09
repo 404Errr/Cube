@@ -8,22 +8,28 @@ import java.util.Random;
 import java.util.Stack;
 
 import data.GeneratorData;
-import solver.Piece;
+import main.Layout;
 
 public class Generator implements GeneratorData {
 	private static Cube cube;
 	private static Pointer currentPointer;
 	private static boolean print;
 	private static StringBuilder log;
+	private static final boolean MAKE_PIECES = true, HIDE_SOLUTION = false, PRINT_LOG_STUFF = false;
 
 	public static void generate() {
 		log = new StringBuilder();
 		gen();
-		print = true;
-		checkValid();
-		log.append("\n"+cube+"\n");
+		if (PRINT_LOG_STUFF) {
+			print = true;
+			checkValid();
+		}
+		log.append("\n"+cube);
+		if (MAKE_PIECES==new Boolean(true)) {
+			if (HIDE_SOLUTION==new Boolean(true)) for (int i = 0;i<25;i++) log.append("\n");
+			makePieces();
+		}
 		System.out.println(log.toString());
-//		makePieces();
 
 	}
 
@@ -81,9 +87,8 @@ public class Generator implements GeneratorData {
 		boolean clusters3D = has3DClusters();
 		boolean clusters2D = has2DClusters();
 //		log.append("flat: "+flat+"\tboring: "+boring+"\tclusters3D: "+clusters3D+"\tclusters2D: "+clusters2D+"\n");
-//		return true;
-//		return !flat&&!clusters2D;
-		return !flat&&!boring&!clusters3D&&!clusters2D;
+		return true;//FIXME
+//		return !flat&&!boring&!clusters3D&&!clusters2D;
 	}
 
 	private static boolean has2DClusters() {
@@ -222,11 +227,10 @@ public class Generator implements GeneratorData {
 				}
 			}
 		}
-
 		return planeCounts;
 	}
 
-	private static void makePieces() {
+	public static void makePieces() {
 		List<int[][][]> pieceLayouts = new ArrayList<>();
 		for (int i = 0;i<PIECE_COUNT;i++) {
 			pieceLayouts.add(new int[SIZE][SIZE][SIZE]);
@@ -239,13 +243,17 @@ public class Generator implements GeneratorData {
 				}
 			}
 		}
-		List<Piece> pieces = new ArrayList<>();
+		List<Layout> pieces = new ArrayList<>();
+		Random rand = new Random();
 		for (int i = 0;i<pieceLayouts.size();i++) {
-			pieces.add(new Piece(pieceLayouts.get(i)));
+			Layout piece = new Layout(pieceLayouts.get(i));
+			piece.trim();
+			if (HIDE_SOLUTION) piece.rotate(rand.nextInt(4), 3, 1);
+			pieces.add(piece);
 		}
 		log.append("\n");
 		for (int i = 0;i<pieces.size();i++) {
-			log.append(pieces.get(i).getLayouts().get(new Random().nextInt(pieces.get(i).getLayouts().size()))+"\n");
+			log.append(pieces.get(i)+"\n");
 		}
 	}
 }

@@ -1,7 +1,8 @@
 package data;
 
 public interface GeneratorData extends MainData {
-	int X = 2, Y = 1, Z = 0;
+	int PIECE_COUNT = 5;
+
 	int PIECE_SIZE_MIN_OFFSET = 1, PIECE_SIZE_MAX_OFFSET = 0;
 
 	int BORING_PLANE_COUNT = 5;
