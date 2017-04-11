@@ -9,30 +9,136 @@ import main.Layout;
 
 public class Solver implements MainData {
 
+
 	public static void solve() {
 		int[][][][] rawPieceLayouts = ToSolve.getUnsolved();
-		List<Layout> pieces = new ArrayList<>();
+		List<Piece> pieces = new ArrayList<>();
 		for (int p = 0;p<rawPieceLayouts.length;p++) {
-			pieces.addAll(Piece.getAllPermutations(new Layout(rawPieceLayouts[p])));
+			pieces.add(new Piece(rawPieceLayouts[p]));
+			System.out.println(pieces.get(p));
 		}
-		System.out.println(pieces);
+		Layout solution = null, working;
+		for (int p = 0;p<pieces.size();p++) {
+			Piece piece = pieces.get(p);
+			working = piece.getLayout().clone();
+			for (int o = 0;o<6;o++) {//every side
+			working.rotate((o==4)?1:(o==5)?2:0, (o>=1&&o<=4)?1:0, 0);
+			for (int r = 0;r<4;r++) {//every rotation of every side
+				working.rotate(0, 0, 1);
+				for (int zO = 0;zO<=SIZE-working.d();zO++) {
+					for (int yO = 0;yO<=SIZE-working.h();yO++) {
+						for (int xO = 0;xO<=SIZE-working.w();xO++) {
+							Layout temp = new Layout(3);
+							if (temp.append(working, xO, yO, zO))
 
+							System.out.println(zO+"\t"+yO+"\t"+xO+"\n"+working);
 
+						}
+					}
+				}
 
+			}
+		}
+//		Collections.sort(pieces);
 
+		List<Layout> pairs = new ArrayList<>();
+//		pairs = combine(pieces.get(0).getLayout(), pieces.get(1).getLayout());
+		System.out.println("Pairs:\n"+pairs);
+//		while (solution==null) {
 
-
-
-
-
-
-
-
-
-
-
-
+//		}
 	}
+
+//	public static List<Layout> combine(Layout l0, Layout l1) {
+//			List<Layout> pairs = new ArrayList<>();
+//			Layout working0;
+//			working0 = l0.clone();
+//			for (int o = 0;o<6;o++) {//every side
+//				working0.rotate((o==4)?1:(o==5)?2:0, (o>=1&&o<=4)?1:0, 0);
+//				for (int r = 0;r<4;r++) {//every rotation of every side
+//					working0.rotate(0, 0, 1);
+//					for (int zO = 0;zO<=SIZE-working0.d();zO++) {
+//						for (int yO = 0;yO<=SIZE-working0.h();yO++) {
+//							for (int xO = 0;xO<=SIZE-working0.w();xO++) {
+//								System.out.println(zO+"\t"+yO+"\t"+xO+"\n"+working0);
+//
+//								Layout working1;
+//								working0 = l.clone();
+//							}
+//						}
+//					}
+//
+//				}
+//			}
+//			return pairs;
+//		}
+//	}
+//
+//		Layout working0 = l0.clone();
+//		for (int o0 = 0;o0<6;o0++) {//every side
+//			working0.rotate((o0==4)?1:(o0==5)?2:0, (o0>=1&&o0<=4)?1:0, 0);
+//			for (int r0 = 0;r0<4;r0++) {//every rotation of every side
+//				working0.rotate(0, 0, 1);
+//				for (int zO0 = 0;zO0<=SIZE-working0.d();zO0++) {
+//					for (int yO0 = 0;yO0<=SIZE-working0.h();yO0++) {
+//						for (int xO0 = 0;xO0<=SIZE-working0.w();xO0++) {
+//							System.out.println(zO0+"\t"+yO0+"\t"+xO0+"\n"+working0);
+//							Layout working1 = l1.clone();
+//							for (int o1 = 0;o1<6;o1++) {//every side
+//								working1.rotate((o1==4)?1:(o1==5)?2:0, (o1>=1&&o1<=4)?1:0, 0);
+//								for (int r1 = 0;r1<4;r1++) {//every rotation of every side
+//									working1.rotate(0, 0, 1);
+//									for (int zO1 = 0;zO1<=SIZE-working1.d();zO1++) {
+//										for (int yO1 = 0;yO1<=SIZE-working1.h();yO1++) {
+//											for (int xO1 = 0;xO1<=SIZE-working1.w();xO1++) {
+//												Layout c = new Layout(3);
+//												boolean success = true;
+//												for (int z = 0;z<working0.d();z++) {
+//													for (int y = 0;y<working0.h();y++) {
+//														for (int x = 0;x<working0.w();x++) {
+//															System.out.println((xO1)+"\t"+(yO1)+"\t"+(zO1)+"\t\t"+(x)+"\t"+(y)+"\t"+(z)+"\t\t"+(xO1+x)+"\t"+(yO1+y)+"\t"+(zO1+z));
+//															c.set(xO1+x, yO1+y, zO1+z, working0.get(x, y, z));
+////															int v0 = working0.get(x, y, z);
+////															int v1 = working1.get(x, y, z);
+////															c.set(x, y, z, v0);
+////															if (v0==0) {
+////																if (v1!=0) c.set(x, y, z, v1);
+////																else success = false;
+////															}
+//														}
+//													}
+//												}
+//												Layout combined = working0.clone();
+//												if (combined.append(working1)) pairs.add(combined);
+//
+//												System.out.println(zO1+"\t"+yO1+"\t"+xO1+"\n"+working1);
+//											}
+//										}
+//									}
+//
+//								}
+//							}
+//						}
+//					}
+//				}
+//
+//			}
+//		}
+//		return null;
+	}
+
+
+//	public static void solve() {
+//		int[][][][] rawPieceLayouts = ToSolve.getUnsolved();
+//		List<Layout> pieces = new ArrayList<>();
+//
+//		for (int p = 0;p<rawPieceLayouts.length;p++) {
+//			pieces.addAll(Piece.getAllPermutations(new Layout(rawPieceLayouts[p])));
+//		}
+//		System.out.println(pieces);
+//
+//
+//	}
 
 
 

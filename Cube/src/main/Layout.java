@@ -5,6 +5,10 @@ import data.MainData;
 public class Layout implements MainData {
 	private int[][][] cubies;
 
+	public Layout(int size) {
+		this.cubies = new int[size][size][size];
+	}
+
 	public Layout(int[][][] layout) {
 		this.cubies = layout;
 	}
@@ -86,6 +90,36 @@ public class Layout implements MainData {
 			}
 		}
 		return new Layout(cloneLayout);
+	}
+
+	public boolean append(Layout toAppend) {
+		for (int z = 0;z<d();z++) {
+			for (int y = 0;y<h();y++) {
+				for (int x = 0;x<w();x++) {
+					int v = get(x, y, z), vA = toAppend.get(x, y, z);
+					if (vA!=0) {
+						if (v==0) set(x, y, z, vA);
+						else return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+
+	public boolean append(Layout toAppend, int xO, int yO, int zO) {
+		for (int z = 0;z<d();z++) {
+			for (int y = 0;y<h();y++) {
+				for (int x = 0;x<w();x++) {
+					int v = get(x+xO, y+yO, z+zO), vA = toAppend.get(x, y, z);
+					if (vA!=0) {
+						if (v==0) set(x+xO, y+yO, z+zO, vA);
+						else return false;
+					}
+				}
+			}
+		}
+		return true;
 	}
 
 	public int get(int x, int y, int z) {
