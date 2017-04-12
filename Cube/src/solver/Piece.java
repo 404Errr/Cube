@@ -3,13 +3,19 @@ package solver;
 import data.MainData;
 import main.Layout;
 
-public class Piece implements MainData {
-	private Layout layout;
+public class Piece implements MainData, Comparable<Piece> {
+	private final Layout layout;
 	private int size;
 
 	public Piece(int[][][] layout) {
 		this.layout = new Layout(layout);
-		//TODO set size
+		for (int z = 0;z<this.layout.d();z++) {
+			for (int y = 0;y<this.layout.h();y++) {
+				for (int x = 0;x<this.layout.w();x++) {
+					if (this.layout.get(x, y, z)!=0) size++;
+				}
+			}
+		}
 	}
 
 	public Layout getLayout() {
@@ -23,6 +29,14 @@ public class Piece implements MainData {
 	@Override
 	public String toString() {
 		return layout.toString();
+	}
+
+	@Override
+	public int compareTo(Piece that) {
+		int thisS = this.getSize(), thatS = that.getSize();
+		if (thisS>thatS) return -1;
+		if (thisS<thatS) return 1;
+		return 0;
 	}
 
 //	public static List<Layout> getAllPermutations(Layout layout) {

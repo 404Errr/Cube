@@ -3,8 +3,8 @@ package data;
 public interface ToSolve {
 	public static int[][][][] getUnsolved() {
 		//TODO load from file
-		return PIECES1;
-//		return TEST;
+//		return PIECES1;
+		return TEST;
 	}
 	//z layers are back to front
 
@@ -12,22 +12,37 @@ public interface ToSolve {
 			{
 				{
 					{1,1,1},
-					{1,1,1},
-					{1,1,1},
+					{1,1,0},
+					{1,1,0},
 				},
 				{
 					{1,1,1},
 					{1,1,1},
-					{1,1,1},
+					{1,1,0},
 				},
 			},
 			{
 				{
 					{2,2,2},
 					{2,2,2},
-					{2,2,2},
+					{2,2,0},
 				},
 			},
+			{
+				{
+					{2},
+					{2},
+				},
+				{
+					{0},
+					{2},
+				},
+				{
+					{0},
+					{2},
+				},
+			},
+
 	};
 
 	int[][][] SIDES6 = {

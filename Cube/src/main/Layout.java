@@ -93,24 +93,13 @@ public class Layout implements MainData {
 	}
 
 	public boolean append(Layout toAppend) {
-		for (int z = 0;z<d();z++) {
-			for (int y = 0;y<h();y++) {
-				for (int x = 0;x<w();x++) {
-					int v = get(x, y, z), vA = toAppend.get(x, y, z);
-					if (vA!=0) {
-						if (v==0) set(x, y, z, vA);
-						else return false;
-					}
-				}
-			}
-		}
-		return true;
+		return append(toAppend, 0, 0, 0);
 	}
 
 	public boolean append(Layout toAppend, int xO, int yO, int zO) {
-		for (int z = 0;z<d();z++) {
-			for (int y = 0;y<h();y++) {
-				for (int x = 0;x<w();x++) {
+		for (int z = 0;z<toAppend.d();z++) {
+			for (int y = 0;y<toAppend.h();y++) {
+				for (int x = 0;x<toAppend.w();x++) {
 					int v = get(x+xO, y+yO, z+zO), vA = toAppend.get(x, y, z);
 					if (vA!=0) {
 						if (v==0) set(x+xO, y+yO, z+zO, vA);

@@ -1,6 +1,7 @@
 package solver;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import data.MainData;
@@ -8,45 +9,122 @@ import data.ToSolve;
 import main.Layout;
 
 public class Solver implements MainData {
-
+	private static Layout solution;
+	private static List<List<Layout>> layouts;
 
 	public static void solve() {
 		int[][][][] rawPieceLayouts = ToSolve.getUnsolved();
 		List<Piece> pieces = new ArrayList<>();
 		for (int p = 0;p<rawPieceLayouts.length;p++) {
 			pieces.add(new Piece(rawPieceLayouts[p]));
-			System.out.println(pieces.get(p));
+//			System.out.println(pieces.get(p));
 		}
-		Layout solution = null, working;
+		Collections.sort(pieces);//larger first
+		layouts = new ArrayList<>();
 		for (int p = 0;p<pieces.size();p++) {
-			Piece piece = pieces.get(p);
-			working = piece.getLayout().clone();
+			layouts.add(new ArrayList<>());
+			Layout layout = pieces.get(p).getLayout().clone();
 			for (int o = 0;o<6;o++) {//every side
-			working.rotate((o==4)?1:(o==5)?2:0, (o>=1&&o<=4)?1:0, 0);
-			for (int r = 0;r<4;r++) {//every rotation of every side
-				working.rotate(0, 0, 1);
-				for (int zO = 0;zO<=SIZE-working.d();zO++) {
-					for (int yO = 0;yO<=SIZE-working.h();yO++) {
-						for (int xO = 0;xO<=SIZE-working.w();xO++) {
-							Layout temp = new Layout(3);
-							if (temp.append(working, xO, yO, zO))
-
-							System.out.println(zO+"\t"+yO+"\t"+xO+"\n"+working);
-
+				layout.rotate((o==4)?1:(o==5)?2:0, (o>=1&&o<=4)?1:0, 0);
+				for (int r = 0;r<4;r++) {//every rotation of every side
+					layout.rotate(0, 0, 1);
+					for (int zO = 0;zO<=SIZE-layout.d();zO++) {
+						for (int yO = 0;yO<=SIZE-layout.h();yO++) {
+							for (int xO = 0;xO<=SIZE-layout.w();xO++) {
+								Layout tempCube = new Layout(3);
+								if (tempCube.append(layout, xO, yO, zO)) {
+									layouts.get(p).add(tempCube);
+//									System.out.println(zO+"\t"+yO+"\t"+xO+"\n"+tempCube);
+								}
+							}
 						}
 					}
-				}
 
+				}
+			}
+			for (int i = layouts.get(p).size()-1;i>=0;i--) {
+				for (int j = 0;j<i;) {
+//					System.out.println(p+"\t"+i+"\t"+j+"\t\t"+layouts.get(p).size()+"\t"+layouts.get(p).get(i).equals(layouts.get(p).get(j)));
+					if (layouts.get(p).get(i).equals(layouts.get(p).get(j))) {
+						layouts.get(p).remove(j);
+						i--;
+					}
+					else j++;
+				}
 			}
 		}
-//		Collections.sort(pieces);
-
-		List<Layout> pairs = new ArrayList<>();
-//		pairs = combine(pieces.get(0).getLayout(), pieces.get(1).getLayout());
-		System.out.println("Pairs:\n"+pairs);
-//		while (solution==null) {
-
+		for (List<Layout> piece:layouts) {
+			for (Layout layout:piece) {
+				System.out.println(layout);
+			}
+		}
+//		List<Layout> pairs = new ArrayList<>();
+//
+//
+//
+//		for (int i = 0;i<layouts.get(0).size();i++) {
+//			for (int j = 0;j<layouts.get(1).size();j++) {
+//				Layout merged = merge(layouts.get(0).get(i), layouts.get(1).get(j));
+//				if (merged!=null) pairs.add(merged);
+//			}
 //		}
+//		System.out.println("Pairs:\n");
+//		for (int i = 0;i<pairs.size();i++) System.out.println(pairs.get(i));
+
+		sol(pieces.size());
+//		Stack<int[]> orders = new Stack<>();
+//		orders.addAll(Util.getPermutations(pieces.size()));
+//		while (!orders.isEmpty()) {
+//			int[] order = orders.pop();
+//			System.out.println("order: "+Arrays.toString(order));
+//			sol(order, pieces.size());
+//			if (solution!=null) break;
+//		}
+
+		//TODO
+	}
+
+	public static Layout lay = new Layout(3);
+
+	private static void sol(int x) {
+		System.out.println(x);
+		if (x==0) {
+//			lay.append(toAppend)
+			//TODO
+		}
+		else {
+			for (int i = 0;i<layouts.size();i++) {
+				sol(x-1);
+			}
+		}
+	}
+//	private static void sol(int[] order, Space[] spaces, List<List<Space>> spacesData, int depth) {
+//	if (depth==0) {
+//		Cube cube = new Cube();
+//		boolean fail = false;
+//		for (int i = 0;i<spaces.length;i++) {
+//			if (!cube.overLay(spaces[i])) {
+//				fail = true;
+//				break;
+//			}
+//		}
+//		if (!fail) Solver.cube = cube;
+//		return;
+//	}
+//	for (int i = 0;i<spacesData.get(depth-1).size();i++) {
+//		spaces[depth-1] = spacesData.get(depth-1).get(i);
+//		sol(order, spaces, spacesData, depth-1);
+//	}
+//	return;
+//}
+
+
+
+
+	public static Layout merge(Layout layout0, Layout layout1) {
+		Layout merged = layout0.clone();
+		if (!merged.append(layout1)) return null;
+		return merged;
 	}
 
 //	public static List<Layout> combine(Layout l0, Layout l1) {
@@ -125,7 +203,7 @@ public class Solver implements MainData {
 //			}
 //		}
 //		return null;
-	}
+
 
 
 //	public static void solve() {
