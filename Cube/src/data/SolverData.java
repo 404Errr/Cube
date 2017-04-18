@@ -1,6 +1,6 @@
 package data;
 
-public interface SolverData extends ToSolve, MainData {
+public interface SolverData extends Data, MainData {
 	int[][][][] TO_SOLVE = PIECES1;
 //	int[][][][] TO_SOLVE = SINGLES;
 //	int[][][][] TO_SOLVE = PIECES3;

@@ -4,7 +4,7 @@ import data.MainData;
 import data.SolverData;
 
 public class Layout implements MainData, SolverData {
-	private int[][][] cubies;
+	protected int[][][] cubies;
 
 	public Layout(int size) {
 		this.cubies = new int[size][size][size];
@@ -123,7 +123,11 @@ public class Layout implements MainData, SolverData {
 		}
 		return true;
 	}
-
+	
+	public void reset() {
+		cubies = new int[SIZE][SIZE][SIZE];
+	}
+	
 	public int get(int x, int y, int z) {
 		return cubies[z][y][x];
 	}
@@ -160,6 +164,25 @@ public class Layout implements MainData, SolverData {
 		return true;
 	}
 
+	public boolean isFull() {
+		for (int z = 0;z<d();z++) {
+			for (int y = 0;y<h();y++) {
+				for (int x = 0;x<w();x++) {
+					if (!isOccupied(x, y, z)) return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	public boolean isOccupied(int x, int y, int z) {
+		return cubies[z][y][x]!=0;
+	}
+	
+	public boolean inBounds(int x, int y, int z) {
+		return x>=0&&y>=0&&z>=0&&x<w()&&y<h()&&z<d();
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder str = new StringBuilder();

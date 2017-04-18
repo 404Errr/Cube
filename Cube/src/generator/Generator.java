@@ -9,10 +9,11 @@ import java.util.Stack;
 
 import data.GeneratorData;
 import main.Layout;
+import main.NavigateableLayout;
 import main.Pointer;
 
 public class Generator implements GeneratorData {
-	private static Cube cube;
+	private static NavigateableLayout cube;
 	private static Pointer currentPointer;
 	private static boolean print;
 	private static StringBuilder log;
@@ -44,7 +45,7 @@ public class Generator implements GeneratorData {
 			if (reset) {
 				reset = false;
 				addedColors = new ArrayList<>();
-				cube = new Cube();
+				cube = new NavigateableLayout(SIZE);
 				currentPointer = new Pointer(SIZE/2, SIZE/2, SIZE/2);
 				color = 1;
 				cubieCount = 0;
@@ -69,7 +70,7 @@ public class Generator implements GeneratorData {
 			if (cube.get(currentPointer)!=color) {
 				cubieCount++;
 				addedColors.add(color);
-				cube.add(currentPointer, color);
+				cube.set(currentPointer, color);
 			}
 			if (shouldAdvanceColor(cubieCount)) {
 				color++;
@@ -89,8 +90,6 @@ public class Generator implements GeneratorData {
 		boolean boring = isBoring();
 		boolean clusters3D = has3DClusters();
 		boolean clusters2D = has2DClusters();
-//		log.append("flat: "+flat+"\tboring: "+boring+"\tclusters3D: "+clusters3D+"\tclusters2D: "+clusters2D+"\n");
-//		return true;
 		return !flat&&!boring&!clusters3D&&!clusters2D;
 	}
 
@@ -234,7 +233,7 @@ public class Generator implements GeneratorData {
 	}
 
 	public static void makePieces(Layout cube) {
-		Generator.cube = new Cube(cube);
+		Generator.cube = new NavigateableLayout(cube.getLayout());
 		List<Integer> colorCount = new ArrayList<>();
 		for (int z = 0;z<SIZE;z++) {
 			for (int y = 0;y<SIZE;y++) {

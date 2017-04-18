@@ -1,6 +1,6 @@
 package data;
 
-public interface ToSolve {
+public interface Data {
 	int[][][][] TEST = {
 			{
 				{

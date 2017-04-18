@@ -6,7 +6,6 @@ public interface GeneratorData extends MainData {
 	boolean MAKE_PIECES = true;
 	boolean HIDE_SOLUTION = true;
 	boolean PRINT_LOG_STUFF = false;
-
 	
 	int PIECE_SIZE_MIN_OFFSET = 1, PIECE_SIZE_MAX_OFFSET = 0;
 
