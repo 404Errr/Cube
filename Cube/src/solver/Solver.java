@@ -11,20 +11,20 @@ import main.Layout;
 
 public class Solver implements SolverData {
 	private static List<Layout> solutions;
-	private static List<List<Layout>> layouts;
+	private static List<List<Piece>> orientations;
 
 	public static void solve() {
 		long startTime = System.currentTimeMillis();
-		int[][][][] rawPieceLayouts = ToSolve.getUnsolved();
-		List<Piece> pieces = new ArrayList<>();
+		int[][][][] rawPieceLayouts = TO_SOLVE;
+		List<OriginalPiece> pieces = new ArrayList<>();
 		for (int p = 0;p<rawPieceLayouts.length;p++) {
-			pieces.add(new Piece(rawPieceLayouts[p]));
+			pieces.add(new OriginalPiece(rawPieceLayouts[p]));
 		}
 		Collections.sort(pieces);//larger first
-		layouts = new ArrayList<>();
+		orientations = new ArrayList<>();
 		for (int p = 0;p<pieces.size();p++) {
-			layouts.add(new ArrayList<>());
-			Layout layout = pieces.get(p).getLayout().clone();
+			orientations.add(new ArrayList<>());
+			Layout layout = pieces.get(p).clone();
 			for (int o = 0;o<6;o++) {//every side
 				layout.rotate((o==4)?1:(o==5)?2:0, (o>=1&&o<=4)?1:0, 0);
 				for (int r = 0;r<4;r++) {//every rotation of every side
@@ -32,9 +32,9 @@ public class Solver implements SolverData {
 					for (int zO = 0;zO<=SIZE-layout.d();zO++) {
 						for (int yO = 0;yO<=SIZE-layout.h();yO++) {
 							for (int xO = 0;xO<=SIZE-layout.w();xO++) {
-								Layout tempCube = new Layout(3);
+								Piece tempCube = new Piece(3);
 								if (tempCube.append(layout, xO, yO, zO)) {
-									layouts.get(p).add(tempCube);
+									orientations.get(p).add(tempCube);
 //									System.out.println(zO+"\t"+yO+"\t"+xO+"\n"+tempCube);
 								}
 							}
@@ -44,16 +44,16 @@ public class Solver implements SolverData {
 				}
 				if (p==0) break;
 			}
-			for (int i = layouts.get(p).size()-1;i>=0;i--) {
+			for (int i = orientations.get(p).size()-1;i>=0;i--) {
 				for (int j = 0;j<i;) {
-					if (layouts.get(p).get(i).equals(layouts.get(p).get(j))) {
-						layouts.get(p).remove(j);
+					if (orientations.get(p).get(i).equals(orientations.get(p).get(j))) {
+						orientations.get(p).remove(j);
 						i--;
 					}
 					else j++;
 				}
 			}
-			Collections.sort(layouts.get(p));
+			Collections.sort(orientations.get(p));
 		}
 //		for (List<Layout> piece:layouts) {
 //			for (Layout layout:piece) {
@@ -61,14 +61,14 @@ public class Solver implements SolverData {
 //			}
 //		}
 		solutions = new ArrayList<>();
-		int[] is = new int[layouts.size()], limits = new int[layouts.size()];
-		for (int i = 0;i<limits.length;i++) limits[i] = layouts.get(i).size();
+		int[] is = new int[orientations.size()], limits = new int[orientations.size()];
+		for (int i = 0;i<limits.length;i++) limits[i] = orientations.get(i).size();
 		System.out.println(Arrays.toString(limits)+"\n");
 		do {
 			Layout potentialSolution = new Layout(3);
-			for (int i = 0;i<layouts.size();i++) {
-				if (!potentialSolution.append(layouts.get(i).get(is[i]))) break;
-				else if (i==layouts.size()-1) {
+			for (int i = 0;i<orientations.size();i++) {
+				if (!potentialSolution.append(orientations.get(i).get(is[i]))) break;
+				else if (i==orientations.size()-1) {
 					solutions.add(potentialSolution);
 				}
 			}

@@ -3,6 +3,11 @@ package data;
 public interface GeneratorData extends MainData {
 	int PIECE_COUNT = 5;
 
+	boolean MAKE_PIECES = true;
+	boolean HIDE_SOLUTION = true;
+	boolean PRINT_LOG_STUFF = false;
+
+	
 	int PIECE_SIZE_MIN_OFFSET = 1, PIECE_SIZE_MAX_OFFSET = 0;
 
 	int BORING_PLANE_COUNT = 5;

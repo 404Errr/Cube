@@ -3,59 +3,51 @@ package solver;
 import data.MainData;
 import main.Layout;
 
-public class Piece implements MainData, Comparable<Piece> {
-	private final Layout layout;
-	private int size;
+public class Piece extends Layout implements MainData, Comparable<Piece> {
+	public Piece(int size) {
+		super(size);
+	}
 
 	public Piece(int[][][] layout) {
-		this.layout = new Layout(layout);
-		for (int z = 0;z<this.layout.d();z++) {
-			for (int y = 0;y<this.layout.h();y++) {
-				for (int x = 0;x<this.layout.w();x++) {
-					if (this.layout.get(x, y, z)!=0) size++;
+		super(layout);
+	}
+	
+	@Override
+	public int compareTo(Piece that) {
+		if (d()!=SIZE||h()!=SIZE||w()!=SIZE) throw new UnsupportedOperationException("not a 3x3x3");
+		int centerThis = 0, centerThat = 0;
+		int edgeThis = 0, edgeThat = 0;
+		int cornerThis = 0, cornerThat = 0;
+		int middleThis = 0, middleThat = 0;
+		for (int z = 0;z<SIZE;z++) {
+			for (int y = 0;y<SIZE;y++) {
+				for (int x = 0;x<SIZE;x++) {
+					if (z!=1&&y!=1&&x!=1) {//corner
+//						System.out.println("corner");//TODO FIXME
+						if (this.get(x, y, z)!=0) cornerThis++;
+						if (that.get(x, y, z)!=0) cornerThat++;
+					}
+					else if (z==1&&y==1&&x==1) {//middle
+						if (this.get(x, y, z)!=0) middleThis++;
+						if (that.get(x, y, z)!=0) middleThat++;
+					}
+					else if (z==1&&y==1||y==1&&x==1||z==1&&x==1) {//center
+						if (this.get(x, y, z)!=0) centerThis++;
+						if (that.get(x, y, z)!=0) centerThat++;
+					}
+					else {//edge
+						if (this.get(x, y, z)!=0) edgeThis++;
+						if (that.get(x, y, z)!=0) edgeThat++;
+					}
 				}
 			}
 		}
-	}
-
-	public Layout getLayout() {
-		return layout;
-	}
-
-	public int getSize() {
-		return size;
-	}
-
-	@Override
-	public String toString() {
-		return layout.toString();
-	}
-
-	@Override
-	public int compareTo(Piece that) {
-		int thisS = this.getSize(), thatS = that.getSize();
-		if (thisS>thatS) return -1;
-		if (thisS<thatS) return 1;
+		float totalThis = centerThis*CENTER+edgeThis*EDGE+cornerThis*CORNER+middleThis*MIDDLE;
+		float totalThat = centerThat*CENTER+edgeThat*EDGE+cornerThat*CORNER+middleThis*MIDDLE;
+		//middle, center, edge, corner
+		System.out.println(middleThis+" "+centerThis+" "+edgeThis+" "+cornerThis+"\t\t"+middleThat+" "+centerThat+" "+edgeThat+" "+cornerThat+"\t\t"+totalThis+" "+totalThat);
+		if (totalThis<totalThat) return -1;
+		if (totalThis>totalThat) return 1;
 		return 0;
 	}
-
-//	public static List<Layout> getAllPermutations(Layout layout) {
-//		List<Layout> layouts = new ArrayList<>();
-//		for (int o = 0;o<6;o++) {
-//			layout.rotate((o==4)?1:(o==5)?2:0, (o>=1&&o<=4)?1:0, 0);
-//			for (int r = 0;r<4;r++) {
-//				layout.rotate(0, 0, 1);
-//				layouts.add(layout.clone());
-//			}
-//		}
-//		for (int i = layouts.size()-1;i>=0;i--) {
-//			for (int j = 0;j<i;j++) {
-//				if (layouts.get(i).equals(layouts.get(j))) {
-//					layouts.remove(j);
-//					break;
-//				}
-//			}
-//		}
-//		return layouts;
-//	}
 }

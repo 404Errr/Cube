@@ -1,20 +1,6 @@
 package data;
 
 public interface ToSolve {
-	public static int[][][][] getUnsolved() {
-		//TODO load from file
-//		return SINGLES;
-		return PIECES1;
-//		return PIECES3;
-//		return TEST;
-	}
-
-//	public static int[][][] getToBuild() {//TODO
-//		return CUBE1;
-//	}
-
-	//z layers are back to front
-
 	int[][][][] TEST = {
 			{
 				{
@@ -243,8 +229,6 @@ public interface ToSolve {
 			{
 				{0,5},
 				{5,5},
-//				{5,0},
-//				{5,5},
 			},
 			{
 				{5,0},

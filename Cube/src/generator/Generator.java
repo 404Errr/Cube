@@ -16,7 +16,6 @@ public class Generator implements GeneratorData {
 	private static Pointer currentPointer;
 	private static boolean print;
 	private static StringBuilder log;
-	private static final boolean MAKE_PIECES = true, HIDE_SOLUTION = true, PRINT_LOG_STUFF = false;
 
 	static {
 		log = new StringBuilder();
