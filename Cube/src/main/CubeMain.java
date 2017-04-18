@@ -1,12 +1,13 @@
 package main;
 
 import data.MainData;
+import data.ToSolve;
 import generator.Generator;
 import solver.Solver;
 
-public class CubeMain implements MainData {
+public class CubeMain implements MainData, ToSolve {
 	private static final int FUNCTION = SOLVE;
-//	private static final int FUNCTION = MAKE;
+//	private static final int FUNCTION = GENERATE;
 
 	public static void main(String[] args) {
 		switch (FUNCTION) {
@@ -14,7 +15,7 @@ public class CubeMain implements MainData {
 			System.out.println("Solving...");
 			Solver.solve();
 			break;
-		case MAKE:
+		case GENERATE:
 			System.out.println("Generating...");
 			Generator.generate();
 			break;

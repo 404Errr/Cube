@@ -1,23 +1,24 @@
 package solver;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import data.MainData;
+import data.SolverData;
 import data.ToSolve;
 import main.Layout;
 
-public class Solver implements MainData {
-	private static Layout solution;
+public class Solver implements SolverData {
+	private static List<Layout> solutions;
 	private static List<List<Layout>> layouts;
 
 	public static void solve() {
+		long startTime = System.currentTimeMillis();
 		int[][][][] rawPieceLayouts = ToSolve.getUnsolved();
 		List<Piece> pieces = new ArrayList<>();
 		for (int p = 0;p<rawPieceLayouts.length;p++) {
 			pieces.add(new Piece(rawPieceLayouts[p]));
-//			System.out.println(pieces.get(p));
 		}
 		Collections.sort(pieces);//larger first
 		layouts = new ArrayList<>();
@@ -39,12 +40,12 @@ public class Solver implements MainData {
 							}
 						}
 					}
-
+					if (p==0) break;
 				}
+				if (p==0) break;
 			}
 			for (int i = layouts.get(p).size()-1;i>=0;i--) {
 				for (int j = 0;j<i;) {
-//					System.out.println(p+"\t"+i+"\t"+j+"\t\t"+layouts.get(p).size()+"\t"+layouts.get(p).get(i).equals(layouts.get(p).get(j)));
 					if (layouts.get(p).get(i).equals(layouts.get(p).get(j))) {
 						layouts.get(p).remove(j);
 						i--;
@@ -52,52 +53,60 @@ public class Solver implements MainData {
 					else j++;
 				}
 			}
+			Collections.sort(layouts.get(p));
 		}
-		for (List<Layout> piece:layouts) {
-			for (Layout layout:piece) {
-				System.out.println(layout);
-			}
-		}
-//		List<Layout> pairs = new ArrayList<>();
-//
-//
-//
-//		for (int i = 0;i<layouts.get(0).size();i++) {
-//			for (int j = 0;j<layouts.get(1).size();j++) {
-//				Layout merged = merge(layouts.get(0).get(i), layouts.get(1).get(j));
-//				if (merged!=null) pairs.add(merged);
+//		for (List<Layout> piece:layouts) {
+//			for (Layout layout:piece) {
+//				System.out.println(layout);
 //			}
 //		}
-//		System.out.println("Pairs:\n");
-//		for (int i = 0;i<pairs.size();i++) System.out.println(pairs.get(i));
-
-		sol(pieces.size());
-//		Stack<int[]> orders = new Stack<>();
-//		orders.addAll(Util.getPermutations(pieces.size()));
-//		while (!orders.isEmpty()) {
-//			int[] order = orders.pop();
-//			System.out.println("order: "+Arrays.toString(order));
-//			sol(order, pieces.size());
-//			if (solution!=null) break;
-//		}
-
-		//TODO
+		solutions = new ArrayList<>();
+		int[] is = new int[layouts.size()], limits = new int[layouts.size()];
+		for (int i = 0;i<limits.length;i++) limits[i] = layouts.get(i).size();
+		System.out.println(Arrays.toString(limits)+"\n");
+		do {
+			Layout potentialSolution = new Layout(3);
+			for (int i = 0;i<layouts.size();i++) {
+				if (!potentialSolution.append(layouts.get(i).get(is[i]))) break;
+				else if (i==layouts.size()-1) {
+					solutions.add(potentialSolution);
+				}
+			}
+//			if (is[1]==0&&is[0]==0&&is[2]==0&&is[3]==0) System.out.println(Arrays.toString(is));
+		} while (!incrementArray(is, limits)&&(solutions.isEmpty()||FIND_ALL));
+		System.out.print((System.currentTimeMillis()-startTime)/1000f+" s\n\n");
+		if (solutions.isEmpty()) System.out.println("No solutions :(");
+		else for (int i = 0;i<solutions.size();i++) System.out.println(solutions.get(i));
 	}
 
-	public static Layout lay = new Layout(3);
-
-	private static void sol(int x) {
-		System.out.println(x);
-		if (x==0) {
-//			lay.append(toAppend)
-			//TODO
-		}
-		else {
-			for (int i = 0;i<layouts.size();i++) {
-				sol(x-1);
+	public static boolean incrementArray(int[] array, int[] limits) {//true if at max, inclusive-exlusive
+		array[0]++;
+		for (int i = 1;i<=array.length;i++) {
+			if (array[i-1]==limits[i-1]) {
+				if (i<array.length) {
+					array[i-1] = 0;
+					array[i]++;
+				}
+				else return true;
 			}
 		}
+		return false;
 	}
+
+//	public static Layout lay = new Layout(3);
+//
+//	private static void sol(int x) {
+//		System.out.println(x);
+//		if (x==0) {
+////			lay.append(toAppend)
+//		}
+//		else {
+//			for (int i = 0;i<layouts.size();i++) {
+//				sol(x-1);
+//			}
+//		}
+//	}
+//
 //	private static void sol(int[] order, Space[] spaces, List<List<Space>> spacesData, int depth) {
 //	if (depth==0) {
 //		Cube cube = new Cube();
@@ -117,16 +126,13 @@ public class Solver implements MainData {
 //	}
 //	return;
 //}
-
-
-
-
-	public static Layout merge(Layout layout0, Layout layout1) {
-		Layout merged = layout0.clone();
-		if (!merged.append(layout1)) return null;
-		return merged;
-	}
-
+//
+//	public static Layout merge(Layout layout0, Layout layout1) {
+//		Layout merged = layout0.clone();
+//		if (!merged.append(layout1)) return null;
+//		return merged;
+//	}
+//
 //	public static List<Layout> combine(Layout l0, Layout l1) {
 //			List<Layout> pairs = new ArrayList<>();
 //			Layout working0;
@@ -203,9 +209,9 @@ public class Solver implements MainData {
 //			}
 //		}
 //		return null;
-
-
-
+//
+//
+//
 //	public static void solve() {
 //		int[][][][] rawPieceLayouts = ToSolve.getUnsolved();
 //		List<Layout> pieces = new ArrayList<>();
@@ -217,10 +223,10 @@ public class Solver implements MainData {
 //
 //
 //	}
-
-
-
-
+//
+//
+//
+//
 //	public static void solve() {
 //		System.out.println("no solution found.");
 //
@@ -275,8 +281,8 @@ public class Solver implements MainData {
 //			if (cube!=null) break;
 //		}
 //		System.out.println(cube);
-	}
-
+//	}
+//
 //	private static void sol(int[] order, Space[] spaces, List<List<Space>> spacesData, int depth) {
 //		if (depth==0) {
 //			Cube cube = new Cube();
@@ -296,7 +302,7 @@ public class Solver implements MainData {
 //		}
 //		return;
 //	}
-//}
+}
 
 
 

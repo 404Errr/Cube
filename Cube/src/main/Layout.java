@@ -2,7 +2,7 @@ package main;
 
 import data.MainData;
 
-public class Layout implements MainData {
+public class Layout implements MainData, Comparable<Layout> {
 	private int[][][] cubies;
 
 	public Layout(int size) {
@@ -40,7 +40,18 @@ public class Layout implements MainData {
 		cubies = trimedCubies;
 	}
 
-	public void rotate(int xRotations, int yRotations, int zRotations) {//FIXME
+	public boolean contains(int val) {
+		for (int z = 0;z<d();z++) {
+			for (int y = 0;y<h();y++) {
+				for (int x = 0;x<w();x++) {
+					if (get(x, y, z)==val) return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public void rotate(int xRotations, int yRotations, int zRotations) {
 		while (xRotations<0) xRotations+=4;
 		while (yRotations<0) yRotations+=4;
 		while (zRotations<0) zRotations+=4;
@@ -96,7 +107,7 @@ public class Layout implements MainData {
 		return append(toAppend, 0, 0, 0);
 	}
 
-	public boolean append(Layout toAppend, int xO, int yO, int zO) {
+	public boolean append(Layout toAppend, int xO, int yO, int zO) {//returns false if collision
 		for (int z = 0;z<toAppend.d();z++) {
 			for (int y = 0;y<toAppend.h();y++) {
 				for (int x = 0;x<toAppend.w();x++) {
@@ -163,5 +174,52 @@ public class Layout implements MainData {
 			}
 		}
 		return str.toString();
+	}
+
+//	private static final float MIDDLE = 15;
+//	private static final float CENTER = 8;
+//	private static final float EDGE = 5;
+//	private static final float CORNER = 1;
+	private static final float MIDDLE = 1f;
+	private static final float CENTER = 0.25f;
+	private static final float EDGE = 0.1f;
+	private static final float CORNER = 0.05f;
+	@Override
+	public int compareTo(Layout that) {
+		if (d()!=SIZE||h()!=SIZE||w()!=SIZE) throw new UnsupportedOperationException("not a 3x3x3");
+		int centerThis = 0, centerThat = 0;
+		int edgeThis = 0, edgeThat = 0;
+		int cornerThis = 0, cornerThat = 0;
+		int middleThis = 0, middleThat = 0;
+		for (int z = 0;z<SIZE;z++) {
+			for (int y = 0;y<SIZE;y++) {
+				for (int x = 0;x<SIZE;x++) {
+					if (z!=1&&y!=1&&x!=1) {//corner
+//						System.out.println("corner");//TODO FIXME verify that it works
+						if (this.get(x, y, z)!=0) cornerThis++;
+						if (that.get(x, y, z)!=0) cornerThat++;
+					}
+					else if (z==1&&y==1&&x==1) {//middle
+						if (this.get(x, y, z)!=0) middleThis++;
+						if (that.get(x, y, z)!=0) middleThat++;
+					}
+					else if (z==1&&y==1||y==1&&x==1||z==1&&x==1) {//center
+						if (this.get(x, y, z)!=0) centerThis++;
+						if (that.get(x, y, z)!=0) centerThat++;
+					}
+					else {//edge
+						if (this.get(x, y, z)!=0) edgeThis++;
+						if (that.get(x, y, z)!=0) edgeThat++;
+					}
+				}
+			}
+		}
+		float totalThis = centerThis*CENTER+edgeThis*EDGE+cornerThis*CORNER+middleThis*MIDDLE;
+		float totalThat = centerThat*CENTER+edgeThat*EDGE+cornerThat*CORNER+middleThis*MIDDLE;
+		//middle, center, edge, corner
+		System.out.println(middleThis+" "+centerThis+" "+edgeThis+" "+cornerThis+"\t\t"+middleThat+" "+centerThat+" "+edgeThat+" "+cornerThat+"\t\t"+totalThis+" "+totalThat);
+		if (totalThis<totalThat) return -1;
+		if (totalThis>totalThat) return 1;
+		return 0;
 	}
 }

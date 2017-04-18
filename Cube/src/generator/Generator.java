@@ -18,8 +18,11 @@ public class Generator implements GeneratorData {
 	private static StringBuilder log;
 	private static final boolean MAKE_PIECES = true, HIDE_SOLUTION = true, PRINT_LOG_STUFF = false;
 
-	public static void generate() {
+	static {
 		log = new StringBuilder();
+	}
+
+	public static void generate() {
 		gen();
 		if (PRINT_LOG_STUFF) {
 			print = true;
@@ -231,7 +234,46 @@ public class Generator implements GeneratorData {
 		return planeCounts;
 	}
 
-	public static void makePieces() {
+	public static void makePieces(Layout cube) {
+		Generator.cube = new Cube(cube);
+		List<Integer> colorCount = new ArrayList<>();
+		for (int z = 0;z<SIZE;z++) {
+			for (int y = 0;y<SIZE;y++) {
+				for (int x = 0;x<SIZE;x++) {
+					if (!colorCount.contains(cube.get(x, y, z))) {
+						colorCount.add(cube.get(x, y, z));
+					}
+				}
+			}
+		}
+		List<int[][][]> pieceLayouts = new ArrayList<>();
+		for (int i = 0;i<colorCount.size();i++) {
+			pieceLayouts.add(new int[SIZE][SIZE][SIZE]);
+			for (int z = 0;z<SIZE;z++) {
+				for (int y = 0;y<SIZE;y++) {
+					for (int x = 0;x<SIZE;x++) {
+						int color = i+1;
+						if (cube.get(x, y, z)==color) pieceLayouts.get(i)[z][y][x] = cube.get(x, y, z);
+					}
+				}
+			}
+		}
+		List<Layout> pieces = new ArrayList<>();
+		Random rand = new Random();
+		for (int i = 0;i<pieceLayouts.size();i++) {
+			Layout piece = new Layout(pieceLayouts.get(i));
+			piece.trim();
+			piece.rotate(rand.nextInt(4), 3, 1);
+			pieces.add(piece);
+		}
+		log.append("\n");
+		for (int i = 0;i<pieces.size();i++) {
+			log.append(pieces.get(i)+"\n");
+		}
+		System.out.println(log.toString());
+	}
+
+	private static void makePieces() {
 		List<int[][][]> pieceLayouts = new ArrayList<>();
 		for (int i = 0;i<PIECE_COUNT;i++) {
 			pieceLayouts.add(new int[SIZE][SIZE][SIZE]);

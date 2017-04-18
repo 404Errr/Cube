@@ -1,6 +1,7 @@
 package generator;
 
 import data.GeneratorData;
+import main.Layout;
 import main.Pointer;
 
 public class Cube implements GeneratorData {
@@ -8,6 +9,17 @@ public class Cube implements GeneratorData {
 
 	public Cube() {
 		reset();
+	}
+
+	public Cube(Layout layout) {
+		reset();
+		for (int z = 0;z<d();z++) {
+			for (int y = 0;y<h();y++) {
+				for (int x = 0;x<w();x++) {
+					cubies[z][y][x] = layout.get(x, y, z);
+				}
+			}
+		}
 	}
 
 	public void reset() {
