@@ -1,8 +1,9 @@
 package main;
 
 import data.MainData;
+import data.SolverData;
 
-public class Layout implements MainData, Comparable<Layout> {
+public class Layout implements MainData, SolverData, Comparable<Layout> {
 	private int[][][] cubies;
 
 	public Layout(int size) {
@@ -176,14 +177,6 @@ public class Layout implements MainData, Comparable<Layout> {
 		return str.toString();
 	}
 
-//	private static final float MIDDLE = 15;
-//	private static final float CENTER = 8;
-//	private static final float EDGE = 5;
-//	private static final float CORNER = 1;
-	private static final float MIDDLE = 1f;
-	private static final float CENTER = 0.25f;
-	private static final float EDGE = 0.1f;
-	private static final float CORNER = 0.05f;
 	@Override
 	public int compareTo(Layout that) {
 		if (d()!=SIZE||h()!=SIZE||w()!=SIZE) throw new UnsupportedOperationException("not a 3x3x3");
@@ -195,7 +188,7 @@ public class Layout implements MainData, Comparable<Layout> {
 			for (int y = 0;y<SIZE;y++) {
 				for (int x = 0;x<SIZE;x++) {
 					if (z!=1&&y!=1&&x!=1) {//corner
-//						System.out.println("corner");//TODO FIXME verify that it works
+//						System.out.println("corner");//TODO FIXME
 						if (this.get(x, y, z)!=0) cornerThis++;
 						if (that.get(x, y, z)!=0) cornerThat++;
 					}

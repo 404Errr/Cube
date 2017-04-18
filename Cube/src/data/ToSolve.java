@@ -4,8 +4,8 @@ public interface ToSolve {
 	public static int[][][][] getUnsolved() {
 		//TODO load from file
 //		return SINGLES;
-//		return PIECES1;
-		return PIECES3;
+		return PIECES1;
+//		return PIECES3;
 //		return TEST;
 	}
 
