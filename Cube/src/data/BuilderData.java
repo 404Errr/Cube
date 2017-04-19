@@ -1,7 +1,12 @@
 package data;
 
 public interface BuilderData extends Data {
-	int[][][][] TO_BUILD = PIECES1;
+	int[][][] TO_BUILD = CUBE1;
 	
+	int SIZE = 3;
+	int PIECE_COUNT = 5;
+	
+	int EMPTY = ' ';
 	int U = 'U', D = 'D', L = 'L', R = 'R', F = 'F', B = 'B';
+	int u = D, d = U, l = R, r = L, f = B, b = F;  
 }
