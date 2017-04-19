@@ -1,6 +1,8 @@
-package main;
+package generator;
 
 import data.GeneratorData;
+import main.Layout;
+import main.Pointer;
 
 public class NavigateableLayout extends Layout implements GeneratorData {
 	public NavigateableLayout(int size) {
@@ -10,7 +12,7 @@ public class NavigateableLayout extends Layout implements GeneratorData {
 	public NavigateableLayout(int[][][] layout) {
 		super(layout);
 	}
-
+	
 	public void set(Pointer pointer, int val) {
 		cubies[pointer.getZ()][pointer.getY()][pointer.getX()] = val;
 	}

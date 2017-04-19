@@ -9,7 +9,6 @@ import java.util.Stack;
 
 import data.GeneratorData;
 import main.Layout;
-import main.NavigateableLayout;
 import main.Pointer;
 
 public class Generator implements GeneratorData {
