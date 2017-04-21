@@ -22,6 +22,7 @@ public class Generator implements GeneratorData {
 	}
 
 	public static void generate() {
+		long startTime = System.currentTimeMillis();
 		gen();
 		if (PRINT_LOG_STUFF) {
 			print = true;
@@ -33,7 +34,7 @@ public class Generator implements GeneratorData {
 			makePieces();
 		}
 		System.out.println(log.toString());
-
+		System.out.print("\n"+(System.currentTimeMillis()-startTime)/1000f+" s\n\n");
 	}
 
 	private static void gen() {
@@ -89,7 +90,29 @@ public class Generator implements GeneratorData {
 		boolean boring = isBoring();
 		boolean clusters3D = has3DClusters();
 		boolean clusters2D = has2DClusters();
-		return !flat&&!boring&!clusters3D&&!clusters2D;
+		boolean practical = isPractical();
+		return practical&&!flat&&!boring&!clusters3D&&!clusters2D;
+	}
+
+	private static boolean isPractical() {
+		for (int z = 0;z<SIZE;z++) {
+			for (int y = 0;y<SIZE;y++) {
+				for (int x = 0;x<SIZE;x++) {
+					for (int a = 0;a<3;a++) {
+						int zOLimit = (a==0)?1:2, yOLimit = (a==1)?1:2, xOLimit = (a==2)?1:2;
+						for (int zO = 0;zO<zOLimit;zO++) {
+							for (int yO = 0;yO<yOLimit;yO++) {
+								for (int xO = 0;xO<xOLimit;xO++) {
+									if (!cube.inBounds(x+xO, y+yO, z+zO)) continue;
+									//TODO
+								}f
+							}
+						}
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	private static boolean has2DClusters() {
