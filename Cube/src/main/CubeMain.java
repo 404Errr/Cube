@@ -1,14 +1,14 @@
 package main;
 
 import builder.Builder;
-import data.MainData;
 import data.Data;
+import data.MainData;
 import generator.Generator;
 import solver.Solver;
 
 public class CubeMain implements MainData, Data {
-//	private static final int FUNCTION = SOLVE;
-	private static final int FUNCTION = GENERATE;
+	private static final int FUNCTION = SOLVE;
+//	private static final int FUNCTION = GENERATE;
 //	private static final int FUNCTION = BUILD;
 
 	public static void main(String[] args) {

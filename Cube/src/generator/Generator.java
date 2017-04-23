@@ -105,7 +105,7 @@ public class Generator implements GeneratorData {
 								for (int xO = 0;xO<xOLimit;xO++) {
 									if (!cube.inBounds(x+xO, y+yO, z+zO)) continue;
 									//TODO
-								}f
+								}
 							}
 						}
 					}
