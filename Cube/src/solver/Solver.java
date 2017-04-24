@@ -4,12 +4,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
+import java.util.Stack;
 
 import data.SolverData;
 import main.Layout;
 
 public class Solver implements SolverData {
 	private static List<Layout> solutions;
+//	private static List<Solution> solutions;
+//	private static Stack<Solution> potentialSolutions;
 	private static List<List<Piece>> orientations;
 	public static int doneCount;
 
@@ -56,45 +60,59 @@ public class Solver implements SolverData {
 			Collections.sort(orientations.get(p));
 		}
 		solutions = new ArrayList<>();
-		int threadCount = 1;
-		if (multiThread) threadCount = orientations.get(0).size();
-		for (int i = 0;i<threadCount;i++) {
-			List<List<Piece>> tempOrientations = new ArrayList<>();
-			for (int p = 0;p<orientations.size();p++) {
-				tempOrientations.add(new ArrayList<>());
-
-				if (p==0&&multiThread) {
-					tempOrientations.get(0).add(orientations.get(0).get(i));
-				}
-				else {
-					for (int o = 0;o<orientations.get(p).size();o++) {
-						tempOrientations.get(p).add(orientations.get(p).get(o));
-					}
-				}
-			}
-			Thread thread = new Thread(new SolverThread(tempOrientations, solutions), i+"");
-			thread.start();
-		}
-		int[] limits = new int[orientations.size()];
-		for (int i = 0;i<limits.length;i++) limits[i] = orientations.get(i).size();
-		System.out.println(Arrays.toString(limits)+"\n"+threadCount+" threads\n");
+//		potentialSolutions = new Stack<>();
 //		int[] is = new int[orientations.size()], limits = new int[orientations.size()];
 //		for (int i = 0;i<limits.length;i++) limits[i] = orientations.get(i).size();
 //		System.out.println(Arrays.toString(limits)+"\n");
 //		do {
-//			Layout potentialSolution = new Layout(3);
+//			List<Piece> tempOrientations = new ArrayList<>();
 //			for (int i = 0;i<orientations.size();i++) {
-//				if (!potentialSolution.append(orientations.get(i).get(is[i]))) break;
-//				else if (i==orientations.size()-1) {
-//					solutions.add(potentialSolution);
-//				}
+//				tempOrientations.add(orientations.get(i).get(is[i]));
 //			}
-////			if (is[1]==0&&is[0]==0&&is[2]==0&&is[3]==0) System.out.println(Arrays.toString(is));
-//		} while (!incArray(is, limits)&&(solutions.isEmpty()||FIND_ALL));
-		while (doneCount<threadCount) {
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException e) {}
+//			potentialSolutions.add(new Solution(tempOrientations, is));
+////			if (new Random().nextInt(1000)==0) System.out.println("KB: " + (double) (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024+" "+Arrays.toString(is));
+//		} while (!incArray(is, limits));
+//		System.out.println(potentialSolutions);
+		if (multiThread) {
+			int threadCount = orientations.get(0).size();
+			for (int i = 0;i<threadCount;i++) {
+				List<List<Piece>> tempOrientations = new ArrayList<>();
+				for (int p = 0;p<orientations.size();p++) {
+					tempOrientations.add(new ArrayList<>());
+					if (p==0) {
+						tempOrientations.get(0).add(orientations.get(0).get(i));
+					}
+					else {
+						for (int o = 0;o<orientations.get(p).size();o++) {
+							tempOrientations.get(p).add(orientations.get(p).get(o));
+						}
+					}
+				}
+				Thread thread = new Thread(new SolverThread(tempOrientations, solutions), i+"");
+				thread.start();
+			}
+			int[] limits = new int[orientations.size()];
+			for (int i = 0;i<limits.length;i++) limits[i] = orientations.get(i).size();
+			System.out.println(threadCount+" threads\n");
+			while (doneCount<threadCount) {
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e) {}
+			}
+		}
+		else {
+			int[] is = new int[orientations.size()], limits = new int[orientations.size()];
+			for (int i = 0;i<limits.length;i++) limits[i] = orientations.get(i).size();
+			System.out.println(Arrays.toString(limits)+"\n");
+			do {
+				Layout potentialSolution = new Layout(3);
+				for (int i = 0;i<orientations.size();i++) {
+					if (!potentialSolution.append(orientations.get(i).get(is[i]))) break;
+					else if (i==orientations.size()-1) {
+						solutions.add(potentialSolution);
+					}
+				}
+			} while (!incArray(is, limits)&&(solutions.isEmpty()||FIND_ALL));
 		}
 		System.out.print((System.currentTimeMillis()-startTime)/1000f+" s\n\n");
 		if (solutions.isEmpty()) System.out.println("No solutions :(");
@@ -141,7 +159,6 @@ class SolverThread implements Runnable, SolverData {
 		} while (!Solver.incArray(is, limits)&&(solutions.isEmpty()||FIND_ALL));
 		Solver.doneCount++;
 	}
-
 }
 
 

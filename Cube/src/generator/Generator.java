@@ -38,13 +38,11 @@ public class Generator implements GeneratorData {
 	}
 
 	private static void gen() {
-		List<Integer> addedColors = null;
 		int color = 1, cubieCount = 0;
 		boolean reset = true, full = false;
 		do {
 			if (reset) {
 				reset = false;
-				addedColors = new ArrayList<>();
 				cube = new NavigateableLayout(SIZE);
 				currentPointer = new Pointer(SIZE/2, SIZE/2, SIZE/2);
 				color = 1;
@@ -69,7 +67,6 @@ public class Generator implements GeneratorData {
 			}
 			if (cube.get(currentPointer)!=color) {
 				cubieCount++;
-				addedColors.add(color);
 				cube.set(currentPointer, color);
 			}
 			if (shouldAdvanceColor(cubieCount)) {
@@ -86,12 +83,72 @@ public class Generator implements GeneratorData {
 	}
 
 	private static boolean isValid() {
-		boolean flat = hasFlat();
-		boolean boring = isBoring();
-		boolean clusters3D = has3DClusters();
-		boolean clusters2D = has2DClusters();
-		boolean practical = isPractical();
-		return practical&&!flat&&!boring&!clusters3D&&!clusters2D;
+		
+		System.out.println(cube);
+		if (!printable()) {
+			System.out.println("not printable");
+			return false;
+		}
+		
+		if (hasFlat()) {
+//			System.out.println("flat");
+			return false;
+		}
+		if (isBoring()) {
+//			System.out.println("boring");
+			return false;
+		}
+		if (has3DClusters()) {
+//			System.out.println("3d");
+			return false;
+		}
+		if (has2DClusters()) {
+//			System.out.println("2d");
+			return false;
+		}
+		if (!isPractical()) {
+//			System.out.println("not practical");
+			return false;
+		}
+//		if (!printable()) {
+//			System.out.println("not printable");
+//			return false;
+//		}
+		return true;
+	}
+	
+	private static boolean printable() {
+		int[][][] pieceLayout = null;
+		for (int i = 0;i<PIECE_COUNT;i++) {
+			pieceLayout = new int[SIZE][SIZE][SIZE];
+			for (int z = 0;z<SIZE;z++) {
+				for (int y = 0;y<SIZE;y++) {
+					for (int x = 0;x<SIZE;x++) {
+						int color = i+1;
+						if (cube.get(x, y, z)==color) pieceLayout[z][y][x] = cube.get(x, y, z);
+					}
+				}
+			}
+
+			Layout piece = new Layout(pieceLayout);
+			piece.trim();
+			int count = 0;
+			for (int o = 0;o<6;o++) {//every side
+				piece.rotate((o==4)?1:(o==5)?2:0, (o>=1&&o<=4)?1:0, 0);
+				boolean found = false;
+				for (int z = 0;z<piece.d();z++) {
+					for (int y = 0;y<piece.h();todoy++) {
+						for (int x = 0;x<piece.w();x++) {
+							System.out.println(cube.get(x, y, z));
+							if (cube.inBounds(x+1, y, z)&&cube.get(x, y, z)!=0&&cube.get(x+1, y, z)==0) found = true;
+						}
+					}
+				}
+				if (found) count++;
+			}
+			if (count>5) return false;
+		}
+		return true;
 	}
 
 	private static boolean isPractical() {
@@ -100,19 +157,26 @@ public class Generator implements GeneratorData {
 				for (int x = 0;x<SIZE;x++) {
 					for (int a = 0;a<3;a++) {
 						int zOLimit = (a==0)?1:2, yOLimit = (a==1)?1:2, xOLimit = (a==2)?1:2;
+						List<Integer> colors = new ArrayList<>();
 						for (int zO = 0;zO<zOLimit;zO++) {
 							for (int yO = 0;yO<yOLimit;yO++) {
 								for (int xO = 0;xO<xOLimit;xO++) {
 									if (!cube.inBounds(x+xO, y+yO, z+zO)) continue;
-									//TODO
+									colors.add(cube.get(x+xO, y+yO, z+zO));
 								}
 							}
 						}
+						if (colors.size()!=4) continue;
+						int tl = colors.get(0), tr = colors.get(1), bl = colors.get(2), br = colors.get(3);
+						if (tl==bl||tr==br||tl==tr||tr==br) continue;//any adjacents are the same
+						if (tl!=br||tr!=bl) continue;
+						System.out.println(colors+"\n"+cube);
+						return false;
 					}
 				}
 			}
 		}
-		return false;
+		return true;
 	}
 
 	private static boolean has2DClusters() {
