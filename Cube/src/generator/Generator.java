@@ -82,14 +82,7 @@ public class Generator implements GeneratorData {
 		return cubieCount>=new Random().nextInt(PIECE_SIZE_MAX-PIECE_SIZE_MIN+1)+PIECE_SIZE_MIN;
 	}
 
-	private static boolean isValid() {
-		
-		System.out.println(cube);
-		if (!printable()) {
-			System.out.println("not printable");
-			return false;
-		}
-		
+	private static boolean isValid() {		
 		if (hasFlat()) {
 //			System.out.println("flat");
 			return false;
@@ -110,14 +103,45 @@ public class Generator implements GeneratorData {
 //			System.out.println("not practical");
 			return false;
 		}
-//		if (!printable()) {
-//			System.out.println("not printable");
+		if (!isPrintable()) {
+//			System.out.println("not printable\n\n"+cube);
+			return false;
+		}
+//		if (hasIdentical()) {//TODO test
+//			System.out.println("has identical\n\n"+cube);
 //			return false;
 //		}
 		return true;
 	}
 	
-	private static boolean printable() {
+//	private static boolean hasIdentical() {//TODO test
+//		List<Layout> pieces = new ArrayList<>();
+//		for (int i = 0;i<PIECE_COUNT;i++) {
+//			int[][][] pieceLayout = new int[SIZE][SIZE][SIZE];
+//			for (int z = 0;z<SIZE;z++) {
+//				for (int y = 0;y<SIZE;y++) {
+//					for (int x = 0;x<SIZE;x++) {
+//						int color = i+1;
+//						if (cube.get(x, y, z)==color) pieceLayout[z][y][x] = cube.get(x, y, z);
+//					}
+//				}
+//			}
+//			Layout piece = new Layout(pieceLayout);
+//			piece.trim();
+//			pieces.add(piece);
+//		}
+//		for (int i = 0;i<pieces.size();i++) {
+//			for (int o = 0;o<6;o++) {//every side
+//				pieces.get(i).rotate((o==4)?1:(o==5)?2:0, (o>=1&&o<=4)?1:0, 0);
+//				for (int j = 0;j<pieces.size();j++) {
+//					if (pieces.get(i).equals(pieces.get(j))) return true;
+//				}
+//			}
+//		}
+//		return false;
+//	}
+
+	private static boolean isPrintable() {
 		int[][][] pieceLayout = null;
 		for (int i = 0;i<PIECE_COUNT;i++) {
 			pieceLayout = new int[SIZE][SIZE][SIZE];
@@ -129,23 +153,29 @@ public class Generator implements GeneratorData {
 					}
 				}
 			}
-
 			Layout piece = new Layout(pieceLayout);
 			piece.trim();
+			if (piece.d()==1||piece.h()==1||piece.w()==1) continue;
 			int count = 0;
+			boolean printable = false;
 			for (int o = 0;o<6;o++) {//every side
 				piece.rotate((o==4)?1:(o==5)?2:0, (o>=1&&o<=4)?1:0, 0);
-				boolean found = false;
+				int overhangs = 0;
 				for (int z = 0;z<piece.d();z++) {
-					for (int y = 0;y<piece.h();todoy++) {
+					for (int y = 0;y<piece.h();y++) {
 						for (int x = 0;x<piece.w();x++) {
-							System.out.println(cube.get(x, y, z));
-							if (cube.inBounds(x+1, y, z)&&cube.get(x, y, z)!=0&&cube.get(x+1, y, z)==0) found = true;
+							if (piece.inBounds(x+1, y, z)) {
+								if (piece.get(x, y, z)==0&&piece.get(x+1, y, z)!=0) overhangs++;//different in collumn
+							}
 						}
 					}
 				}
-				if (found) count++;
+//				System.out.println("\n"+piece+"o "+o+"\toverhangs "+overhangs+"\tcount "+count+"\tprintable "+printable);								
+				if (overhangs==0) {
+					printable = true;
+				}
 			}
+			if (!printable) count++;
 			if (count>5) return false;
 		}
 		return true;
