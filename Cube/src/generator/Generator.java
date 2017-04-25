@@ -37,6 +37,7 @@ public class Generator implements GeneratorData {
 		System.out.print("\n"+(System.currentTimeMillis()-startTime)/1000f+" s\n\n");
 	}
 
+	private static final int BACKTRACK_CHANCE = 3;
 	private static void gen() {
 		int color = 1, cubieCount = 0;
 		boolean reset = true, full = false;
@@ -48,14 +49,17 @@ public class Generator implements GeneratorData {
 				color = 1;
 				cubieCount = 0;
 			}
+			boolean couldMove = false;
 			Stack<int[]> moves = new Stack<>();
 			moves.addAll(Arrays.asList(new int[] {1, 0, 0}, new int[] {0, 1, 0}, new int[] {0, 0, 1}, new int[] {-1, 0, 0}, new int[] {0, -1, 0}, new int[] {0, 0, -1}));
 			Collections.shuffle(moves);
-			boolean couldMove = false;
 			while (!moves.isEmpty()) {
+//			for (int i = 0;i<moves.size();i++) {//TODO
 				int[] move = moves.pop();
+//				int[] move = moves.get(i);
+//				System.out.println();
 				Pointer tempPointer = currentPointer.getMoved(move[0], move[1], move[2]);
-				if (cube.inBounds(tempPointer)&&((cube.get(tempPointer)==color&&new Random().nextInt(3)==0)||!cube.isOccupied(tempPointer))) {
+				if (cube.inBounds(tempPointer)&&((cube.get(tempPointer)==color&&new Random().nextInt(BACKTRACK_CHANCE)==0)||!cube.isOccupied(tempPointer))) {
 					currentPointer = tempPointer;
 					couldMove = true;
 					break;
@@ -107,39 +111,39 @@ public class Generator implements GeneratorData {
 ////			System.out.println("not printable\n\n"+cube);
 //			return false;
 //		}
-//		if (hasIdentical()) {//TODO test
-//			System.out.println("has identical\n\n"+cube);
+//		if (hasIdentical()) {
+////			System.out.println("has identical\n\n"+cube);
 //			return false;
 //		}
 		return true;
 	}
 	
-//	private static boolean hasIdentical() {//TODO test
-//		List<Layout> pieces = new ArrayList<>();
-//		for (int i = 0;i<PIECE_COUNT;i++) {
-//			int[][][] pieceLayout = new int[SIZE][SIZE][SIZE];
-//			for (int z = 0;z<SIZE;z++) {
-//				for (int y = 0;y<SIZE;y++) {
-//					for (int x = 0;x<SIZE;x++) {
-//						int color = i+1;
-//						if (cube.get(x, y, z)==color) pieceLayout[z][y][x] = cube.get(x, y, z);
-//					}
-//				}
-//			}
-//			Layout piece = new Layout(pieceLayout);
-//			piece.trim();
-//			pieces.add(piece);
-//		}
-//		for (int i = 0;i<pieces.size();i++) {
-//			for (int o = 0;o<6;o++) {//every side
-//				pieces.get(i).rotate((o==4)?1:(o==5)?2:0, (o>=1&&o<=4)?1:0, 0);
-//				for (int j = 0;j<pieces.size();j++) {
-//					if (pieces.get(i).equals(pieces.get(j))) return true;
-//				}
-//			}
-//		}
-//		return false;
-//	}
+	private static boolean hasIdentical() {//TODO test
+		List<Layout> pieces = new ArrayList<>();
+		for (int i = 0;i<PIECE_COUNT;i++) {
+			int[][][] pieceLayout = new int[SIZE][SIZE][SIZE];
+			for (int z = 0;z<SIZE;z++) {
+				for (int y = 0;y<SIZE;y++) {
+					for (int x = 0;x<SIZE;x++) {
+						int color = i+1;
+						if (cube.get(x, y, z)==color) pieceLayout[z][y][x] = cube.get(x, y, z);
+					}
+				}
+			}
+			Layout piece = new Layout(pieceLayout);
+			piece.trim();
+			pieces.add(piece);
+		}
+		for (int i = 0;i<pieces.size();i++) {
+			for (int o = 0;o<6;o++) {//every side
+				pieces.get(i).rotate((o==4)?1:(o==5)?2:0, (o>=1&&o<=4)?1:0, 0);
+				for (int j = 0;j<pieces.size();j++) {
+					if (pieces.get(i).equals(pieces.get(j))) return true;
+				}
+			}
+		}
+		return false;
+	}
 
 	private static boolean isPrintable() {
 		int[][][] pieceLayout = null;

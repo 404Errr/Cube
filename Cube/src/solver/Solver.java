@@ -60,19 +60,6 @@ public class Solver implements SolverData {
 			Collections.sort(orientations.get(p));
 		}
 		solutions = new ArrayList<>();
-//		potentialSolutions = new Stack<>();
-//		int[] is = new int[orientations.size()], limits = new int[orientations.size()];
-//		for (int i = 0;i<limits.length;i++) limits[i] = orientations.get(i).size();
-//		System.out.println(Arrays.toString(limits)+"\n");
-//		do {
-//			List<Piece> tempOrientations = new ArrayList<>();
-//			for (int i = 0;i<orientations.size();i++) {
-//				tempOrientations.add(orientations.get(i).get(is[i]));
-//			}
-//			potentialSolutions.add(new Solution(tempOrientations, is));
-////			if (new Random().nextInt(1000)==0) System.out.println("KB: " + (double) (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024+" "+Arrays.toString(is));
-//		} while (!incArray(is, limits));
-//		System.out.println(potentialSolutions);
 		if (multiThread) {
 			int threadCount = orientations.get(0).size();
 			for (int i = 0;i<threadCount;i++) {

@@ -1,6 +1,5 @@
 package main;
 
-import builder.Builder;
 import data.Data;
 import data.MainData;
 import generator.Generator;
@@ -21,9 +20,12 @@ public class CubeMain implements MainData, Data {
 			System.out.println("Generating...");
 			Generator.generate();
 			break;
-		case BUILD:
-			System.out.println("Building...");
-			Builder.build();
+//		case BUILD://FIXME
+//			System.out.println("Building...");
+//			Builder.build();
+//			break;
+		default:
+			System.out.println("Invalid function.");
 			break;
 		}
 	}
