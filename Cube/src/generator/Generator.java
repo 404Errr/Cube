@@ -38,29 +38,32 @@ public class Generator implements GeneratorData {
 	}
 
 	private static final int BACKTRACK_CHANCE = 3;
+	private static final int PREVENT_FORWARD_CHANCE = 2;
 	private static void gen() {
+		Random rand = new Random();
 		int color = 1, cubieCount = 0;
+		Stack<int[]> moves = new Stack<>();
+		moves.addAll(Arrays.asList(new int[] {1, 0, 0}, new int[] {0, 1, 0}, new int[] {0, 0, 1}, new int[] {-1, 0, 0}, new int[] {0, -1, 0}, new int[] {0, 0, -1}));
+		Collections.shuffle(moves);
 		boolean reset = true, full = false;
 		do {
 			if (reset) {
 				reset = false;
 				cube = new NavigateableLayout(SIZE);
-				currentPointer = new Pointer(SIZE/2, SIZE/2, SIZE/2);
+				currentPointer = new Pointer(1, 1, 1);
 				color = 1;
 				cubieCount = 0;
 			}
 			boolean couldMove = false;
-			Stack<int[]> moves = new Stack<>();
-			moves.addAll(Arrays.asList(new int[] {1, 0, 0}, new int[] {0, 1, 0}, new int[] {0, 0, 1}, new int[] {-1, 0, 0}, new int[] {0, -1, 0}, new int[] {0, 0, -1}));
-			Collections.shuffle(moves);
-			while (!moves.isEmpty()) {
-//			for (int i = 0;i<moves.size();i++) {//TODO
-				int[] move = moves.pop();
-//				int[] move = moves.get(i);
-//				System.out.println();
+//			while (!moves.isEmpty()) {
+			for (int i = 0;i<moves.size();i++) {//TODO
+//				int[] move = moves.pop();
+				int[] move = moves.get(i);
+//				System.out.println(Arrays.toString(moves.get(i)));
 				Pointer tempPointer = currentPointer.getMoved(move[0], move[1], move[2]);
-				if (cube.inBounds(tempPointer)&&((cube.get(tempPointer)==color&&new Random().nextInt(BACKTRACK_CHANCE)==0)||!cube.isOccupied(tempPointer))) {
+				if (cube.inBounds(tempPointer)&&((cube.get(tempPointer)==color&&rand.nextInt(BACKTRACK_CHANCE)==0)||!cube.isOccupied(tempPointer))) {
 					currentPointer = tempPointer;
+					if (rand.nextInt(PREVENT_FORWARD_CHANCE)==0) moves.push(moves.remove(i));
 					couldMove = true;
 					break;
 				}
@@ -87,12 +90,22 @@ public class Generator implements GeneratorData {
 	}
 
 	private static boolean isValid() {		
+		
+//		if (hasOverhang()) {//FIXME
+////			System.out.println("hasOverhang\n"+cube);
+//			return false;
+//		}
+
 		if (hasFlat()) {
 //			System.out.println("flat");
 			return false;
 		}
-		if (isBoring()) {
+		if (tooManyOnPlane()) {
 //			System.out.println("boring");
+			return false;
+		}
+		if (!hasCollision()) {
+//			System.out.println("has collision");
 			return false;
 		}
 		if (has3DClusters()) {
@@ -103,18 +116,10 @@ public class Generator implements GeneratorData {
 //			System.out.println("2d");
 			return false;
 		}
-		if (!isPractical()) {
-//			System.out.println("not practical");
+		if (hasIdentical()) {
+			System.out.println("has identical\n\n"+cube);
 			return false;
 		}
-//		if (!isPrintable()) {//FIXME
-////			System.out.println("not printable\n\n"+cube);
-//			return false;
-//		}
-//		if (hasIdentical()) {
-////			System.out.println("has identical\n\n"+cube);
-//			return false;
-//		}
 		return true;
 	}
 	
@@ -145,7 +150,7 @@ public class Generator implements GeneratorData {
 		return false;
 	}
 
-	private static boolean isPrintable() {
+	private static boolean hasOverhang() {//FIXME
 		int[][][] pieceLayout = null;
 		for (int i = 0;i<PIECE_COUNT;i++) {
 			pieceLayout = new int[SIZE][SIZE][SIZE];
@@ -160,36 +165,39 @@ public class Generator implements GeneratorData {
 			Layout piece = new Layout(pieceLayout);
 			piece.trim();
 			if (piece.d()==1||piece.h()==1||piece.w()==1) continue;
-			int count = 0;
-			boolean printable = false;
+			boolean hasOverhang = true;
 			for (int o = 0;o<6;o++) {//every side
 				piece.rotate((o==4)?1:(o==5)?2:0, (o>=1&&o<=4)?1:0, 0);
 				int overhangs = 0;
 				for (int z = 0;z<piece.d();z++) {
 					for (int y = 0;y<piece.h();y++) {
 						for (int x = 0;x<piece.w();x++) {
-							if (piece.inBounds(x+1, y, z)) {
-								if (piece.get(x, y, z)==0&&piece.get(x+1, y, z)!=0) overhangs++;//different in collumn
+							if (piece.inBounds(x, y-1, z)) {
+								if (piece.get(x, y, z)==0&&piece.get(x, y-1, z)!=0) {
+									overhangs++;
+								}
 							}
 						}
 					}
 				}
 //				System.out.println("\n"+piece+"o "+o+"\toverhangs "+overhangs+"\tcount "+count+"\tprintable "+printable);								
 				if (overhangs==0) {
-					printable = true;
+					hasOverhang = false;
+					break;
 				}
 			}
-			if (!printable) count++;
-			if (count>5) return false;
+			if (!hasOverhang) continue;
+			System.out.println(piece);
+			return true;
 		}
-		return true;
+		return false;
 	}
 
-	private static boolean isPractical() {
+	private static boolean hasCollision() {
 		for (int z = 0;z<SIZE;z++) {
 			for (int y = 0;y<SIZE;y++) {
 				for (int x = 0;x<SIZE;x++) {
-					for (int a = 0;a<3;a++) {
+					for (int a = 0;a<3;a++) {//2x2x1
 						int zOLimit = (a==0)?1:2, yOLimit = (a==1)?1:2, xOLimit = (a==2)?1:2;
 						List<Integer> colors = new ArrayList<>();
 						for (int zO = 0;zO<zOLimit;zO++) {
@@ -203,13 +211,29 @@ public class Generator implements GeneratorData {
 						if (colors.size()!=4) continue;
 						int tl = colors.get(0), tr = colors.get(1), bl = colors.get(2), br = colors.get(3);
 						if (tl==bl||tr==br||tl==tr||tr==br||tl!=br||tr!=bl) continue;
-						System.out.println(colors+"\n"+cube);
-						return false;
+						return true;
+					}
+					for (int a = 0;a<3;a++) {//3x1x1
+						int zOLimit = (a==0)?3:1, yOLimit = (a==1)?3:1, xOLimit = (a==2)?3:1;
+						List<Integer> colors = new ArrayList<>();
+						for (int zO = 0;zO<zOLimit;zO++) {
+							for (int yO = 0;yO<yOLimit;yO++) {
+								for (int xO = 0;xO<xOLimit;xO++) {
+									if (!cube.inBounds(x+xO, y+yO, z+zO)) continue;
+									colors.add(cube.get(x+xO, y+yO, z+zO));
+								}
+							}
+						}
+						if (colors.size()<3) continue;
+						if (colors.get(0)==colors.get(2)&&colors.get(0)!=colors.get(1)) {
+							System.out.println("3x1x1\n"+cube);
+							return true;
+						}
 					}
 				}
 			}
 		}
-		return true;
+		return false;
 	}
 
 	private static boolean has2DClusters() {
@@ -270,8 +294,7 @@ public class Generator implements GeneratorData {
 		return false;
 	}
 
-	private static boolean isBoring() {
-		int totalCount = 0;
+	private static boolean tooManyOnPlane() {
 		int[][][] nCount = new int[SIZE][SIZE][SIZE];
 		for (int z = 0;z<SIZE;z++) {
 			for (int y = 0;y<SIZE;y++) {
@@ -284,7 +307,6 @@ public class Generator implements GeneratorData {
 							}
 						}
 					}
-					totalCount+=count;
 					nCount[z][y][x] = count;
 				}
 			}
@@ -297,9 +319,6 @@ public class Generator implements GeneratorData {
 					if (planeCounts.get(i)[j][k]>=BORING_PLANE_COUNT) tooManyOnPlane = true;
 				}
 			}
-		}
-		if (print) {
-			log.append("tooManyOnPlane: "+tooManyOnPlane+"\ntotalCount: "+totalCount+"\n");
 		}
 		return tooManyOnPlane;
 	}
