@@ -38,13 +38,10 @@ public class Generator implements GeneratorData {
 	}
 
 	private static final int BACKTRACK_CHANCE = 3;
-	private static final int PREVENT_FORWARD_CHANCE = 2;
+//	private static final int PREVENT_FORWARD_CHANCE = 2;
 	private static void gen() {
 		Random rand = new Random();
 		int color = 1, cubieCount = 0;
-		Stack<int[]> moves = new Stack<>();
-		moves.addAll(Arrays.asList(new int[] {1, 0, 0}, new int[] {0, 1, 0}, new int[] {0, 0, 1}, new int[] {-1, 0, 0}, new int[] {0, -1, 0}, new int[] {0, 0, -1}));
-		Collections.shuffle(moves);
 		boolean reset = true, full = false;
 		do {
 			if (reset) {
@@ -55,15 +52,17 @@ public class Generator implements GeneratorData {
 				cubieCount = 0;
 			}
 			boolean couldMove = false;
-//			while (!moves.isEmpty()) {
-			for (int i = 0;i<moves.size();i++) {//TODO
-//				int[] move = moves.pop();
-				int[] move = moves.get(i);
+			Stack<int[]> moves = new Stack<>();
+			moves.addAll(Arrays.asList(new int[] {1, 0, 0}, new int[] {0, 1, 0}, new int[] {0, 0, 1}, new int[] {-1, 0, 0}, new int[] {0, -1, 0}, new int[] {0, 0, -1}));
+			Collections.shuffle(moves);
+			while (!moves.isEmpty()) {
+//			for (int i = 0;i<moves.size();i++) {//TODO
+				int[] move = moves.pop();
+//				int[] move = moves.get(i);
 //				System.out.println(Arrays.toString(moves.get(i)));
 				Pointer tempPointer = currentPointer.getMoved(move[0], move[1], move[2]);
 				if (cube.inBounds(tempPointer)&&((cube.get(tempPointer)==color&&rand.nextInt(BACKTRACK_CHANCE)==0)||!cube.isOccupied(tempPointer))) {
 					currentPointer = tempPointer;
-					if (rand.nextInt(PREVENT_FORWARD_CHANCE)==0) moves.push(moves.remove(i));
 					couldMove = true;
 					break;
 				}
@@ -90,11 +89,6 @@ public class Generator implements GeneratorData {
 	}
 
 	private static boolean isValid() {		
-		
-//		if (hasOverhang()) {//FIXME
-////			System.out.println("hasOverhang\n"+cube);
-//			return false;
-//		}
 
 		if (hasFlat()) {
 //			System.out.println("flat");
@@ -115,11 +109,16 @@ public class Generator implements GeneratorData {
 		if (has2DClusters()) {
 //			System.out.println("2d");
 			return false;
-		}
-		if (hasIdentical()) {
-			System.out.println("has identical\n\n"+cube);
-			return false;
-		}
+		}		
+//		if (hasOverhang()) {//FIXME
+////			System.out.println("hasOverhang\n"+cube);
+//			return false;
+//		}
+
+//		if (hasIdentical()) {
+//			System.out.println("has identical\n\n"+cube);
+//			return false;
+//		}
 		return true;
 	}
 	
@@ -143,57 +142,59 @@ public class Generator implements GeneratorData {
 			for (int o = 0;o<6;o++) {//every side
 				pieces.get(i).rotate((o==4)?1:(o==5)?2:0, (o>=1&&o<=4)?1:0, 0);
 				for (int j = 0;j<pieces.size();j++) {
-					if (pieces.get(i).equals(pieces.get(j))) return true;
+					if (pieces.get(i).equals(pieces.get(j))) {
+						return true;
+					}
 				}
 			}
 		}
 		return false;
 	}
 
-	private static boolean hasOverhang() {//FIXME
-		int[][][] pieceLayout = null;
-		for (int i = 0;i<PIECE_COUNT;i++) {
-			pieceLayout = new int[SIZE][SIZE][SIZE];
-			for (int z = 0;z<SIZE;z++) {
-				for (int y = 0;y<SIZE;y++) {
-					for (int x = 0;x<SIZE;x++) {
-						int color = i+1;
-						if (cube.get(x, y, z)==color) pieceLayout[z][y][x] = cube.get(x, y, z);
-					}
-				}
-			}
-			Layout piece = new Layout(pieceLayout);
-			piece.trim();
-			if (piece.d()==1||piece.h()==1||piece.w()==1) continue;
-			boolean hasOverhang = true;
-			for (int o = 0;o<6;o++) {//every side
-				piece.rotate((o==4)?1:(o==5)?2:0, (o>=1&&o<=4)?1:0, 0);
-				int overhangs = 0;
-				for (int z = 0;z<piece.d();z++) {
-					for (int y = 0;y<piece.h();y++) {
-						for (int x = 0;x<piece.w();x++) {
-							if (piece.inBounds(x, y-1, z)) {
-								if (piece.get(x, y, z)==0&&piece.get(x, y-1, z)!=0) {
-									overhangs++;
-								}
-							}
-						}
-					}
-				}
-//				System.out.println("\n"+piece+"o "+o+"\toverhangs "+overhangs+"\tcount "+count+"\tprintable "+printable);								
-				if (overhangs==0) {
-					hasOverhang = false;
-					break;
-				}
-			}
-			if (!hasOverhang) continue;
-			System.out.println(piece);
-			return true;
-		}
-		return false;
-	}
+//	private static boolean hasOverhang() {//FIXME
+//		int[][][] pieceLayout = null;
+//		for (int i = 0;i<PIECE_COUNT;i++) {
+//			pieceLayout = new int[SIZE][SIZE][SIZE];
+//			for (int z = 0;z<SIZE;z++) {
+//				for (int y = 0;y<SIZE;y++) {
+//					for (int x = 0;x<SIZE;x++) {
+//						int color = i+1;
+//						if (cube.get(x, y, z)==color) pieceLayout[z][y][x] = cube.get(x, y, z);
+//					}
+//				}
+//			}
+//			Layout piece = new Layout(pieceLayout);
+//			piece.trim();
+//			if (piece.d()==1||piece.h()==1||piece.w()==1) continue;
+//			boolean hasOverhang = true;
+//			for (int o = 0;o<6;o++) {//every side
+//				piece.rotate((o==4)?1:(o==5)?2:0, (o>=1&&o<=4)?1:0, 0);
+//				int overhangs = 0;
+//				for (int z = 0;z<piece.d();z++) {
+//					for (int y = 0;y<piece.h();y++) {
+//						for (int x = 0;x<piece.w();x++) {
+//							if (piece.inBounds(x, y-1, z)) {
+//								if (piece.get(x, y, z)==0&&piece.get(x, y-1, z)!=0) {
+//									overhangs++;
+//								}
+//							}
+//						}
+//					}
+//				}
+////				System.out.println("\n"+piece+"o "+o+"\toverhangs "+overhangs+"\tcount "+count+"\tprintable "+printable);								
+//				if (overhangs==0) {
+//					hasOverhang = false;
+//					break;
+//				}
+//			}
+//			if (!hasOverhang) continue;
+//			System.out.println(piece);
+//			return true;
+//		}
+//		return false;
+//	}
 
-	private static boolean hasCollision() {
+	private static boolean hasCollision() {//FIXME
 		for (int z = 0;z<SIZE;z++) {
 			for (int y = 0;y<SIZE;y++) {
 				for (int x = 0;x<SIZE;x++) {
@@ -226,7 +227,7 @@ public class Generator implements GeneratorData {
 						}
 						if (colors.size()<3) continue;
 						if (colors.get(0)==colors.get(2)&&colors.get(0)!=colors.get(1)) {
-							System.out.println("3x1x1\n"+cube);
+//							System.out.println("3x1x1\n"+cube);
 							return true;
 						}
 					}
@@ -259,7 +260,7 @@ public class Generator implements GeneratorData {
 						for (int i = 0;i<counts.size();i++) {
 							if (counts.get(i)>=BORING_2D_CLUSTER_COUNT) return true;
 						}
-						if (print) log.append(counts+"\n");
+//						if (print) log.append(counts+"\n");
 					}
 				}
 			}
@@ -339,16 +340,16 @@ public class Generator implements GeneratorData {
 				}
 			}
 		}
-		if (print) {
-			for (int i = 0;i<planeCounts.size();i++) {
-				log.append((i+1)+"\n");
-				for (int j = 0;j<planeCounts.get(i).length;j++) {
-					log.append(((j==X)?"x":(j==Y)?"y":"z")+" "+Arrays.toString(planeCounts.get(i)[j])+"\n");
-				}
-				log.append("\n");
-			}
-			log.append("flatCount: "+flatCount+"\n");
-		}
+//		if (print) {
+//			for (int i = 0;i<planeCounts.size();i++) {
+//				log.append((i+1)+"\n");
+//				for (int j = 0;j<planeCounts.get(i).length;j++) {
+//					log.append(((j==X)?"x":(j==Y)?"y":"z")+" "+Arrays.toString(planeCounts.get(i)[j])+"\n");
+//				}
+//				log.append("\n");
+//			}
+//			log.append("flatCount: "+flatCount+"\n");
+//		}
 		return flatCount!=0;
 	}
 
