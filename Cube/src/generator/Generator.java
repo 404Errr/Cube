@@ -103,10 +103,10 @@ public class Generator implements GeneratorData {
 //			System.out.println("not practical");
 			return false;
 		}
-		if (!isPrintable()) {
-//			System.out.println("not printable\n\n"+cube);
-			return false;
-		}
+//		if (!isPrintable()) {//FIXME
+////			System.out.println("not printable\n\n"+cube);
+//			return false;
+//		}
 //		if (hasIdentical()) {//TODO test
 //			System.out.println("has identical\n\n"+cube);
 //			return false;
@@ -198,8 +198,7 @@ public class Generator implements GeneratorData {
 						}
 						if (colors.size()!=4) continue;
 						int tl = colors.get(0), tr = colors.get(1), bl = colors.get(2), br = colors.get(3);
-						if (tl==bl||tr==br||tl==tr||tr==br) continue;//any adjacents are the same
-						if (tl!=br||tr!=bl) continue;
+						if (tl==bl||tr==br||tl==tr||tr==br||tl!=br||tr!=bl) continue;
 						System.out.println(colors+"\n"+cube);
 						return false;
 					}
