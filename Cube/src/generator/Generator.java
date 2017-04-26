@@ -86,6 +86,10 @@ public class Generator implements GeneratorData {
 	}
 
 	private static boolean isValid() {
+//		if (hasOverhang()) {//TODO FIXME
+//			System.out.println("has overhang\n"+cube);
+//			return false;
+//		}
 		if (hasFlat()) {
 //			System.out.println("flat");
 			return false;
@@ -106,10 +110,6 @@ public class Generator implements GeneratorData {
 //			System.out.println("3d");
 			return false;
 		}
-//		if (hasOverhang()) {//TODO FIXME
-//			System.out.println("has overhang\n"+cube);
-//			return false;
-//		}
 		if (hasIdentical()) {
 //			System.out.println("has identical);
 			return false;
@@ -117,7 +117,7 @@ public class Generator implements GeneratorData {
 		return true;
 	}
 
-	private static boolean hasIdentical() {
+	private static boolean hasIdentical() {//FIXME
 		List<Layout> pieces = new ArrayList<>();
 		for (int i = 0;i<PIECE_COUNT;i++) {
 			int[][][] pieceLayout = new int[SIZE][SIZE][SIZE];
@@ -134,7 +134,7 @@ public class Generator implements GeneratorData {
 			pieces.add(piece);
 		}
 		for (int i = 0;i<pieces.size();i++) {
-			for (int o = 0;o<6;o++) {//every side
+			for (int o = 0;o<6;o++) {
 				pieces.get(i).rotate((o==4)?1:(o==5)?2:0, (o>=1&&o<=4)?1:0, 0);
 				for (int j = 0;j<pieces.size();j++) {
 					if (i!=j&&pieces.get(i).equals(pieces.get(j))) {
@@ -146,45 +146,54 @@ public class Generator implements GeneratorData {
 		return false;
 	}
 
+	//top-bottom/left-right/back-front
+//	private static final int[][] OVERHANGS = {{1,0}, {1,0,0}, {0,1,0}, {1,1,0}};
+//	
 //	private static boolean hasOverhang() {//FIXME TODO
 //		int[][][] pieceLayout = null;
-//		for (int i = 0;i<PIECE_COUNT;i++) {
+//		for (int p = 0;p<PIECE_COUNT;p++) {
 //			pieceLayout = new int[SIZE][SIZE][SIZE];
 //			for (int z = 0;z<SIZE;z++) {
 //				for (int y = 0;y<SIZE;y++) {
 //					for (int x = 0;x<SIZE;x++) {
-//						int color = i+1;
+//						int color = p+1;
 //						if (cube.get(x, y, z)==color) pieceLayout[z][y][x] = cube.get(x, y, z);
 //					}
 //				}
 //			}
 //			Layout piece = new Layout(pieceLayout);
 //			piece.trim();
+//			System.out.println(piece);
 //			if (piece.d()==1||piece.h()==1||piece.w()==1) continue;
-//			boolean hasOverhang = true;
-//			for (int o = 0;o<6;o++) {//every side
+//			int safeSides = 6;
+//			for (int o = 0;o<6;o++) {
 //				piece.rotate((o==4)?1:(o==5)?2:0, (o>=1&&o<=4)?1:0, 0);
-//				int overhangs = 0;
-//				for (int z = 0;z<piece.d();z++) {
-//					for (int y = 0;y<piece.h();y++) {
-//						for (int x = 0;x<piece.w();x++) {
-//							if (piece.inBounds(x, y-1, z)) {
-//								if (piece.get(x, y, z)==0&&piece.get(x, y-1, z)!=0) {
-//									overhangs++;
-//								}
+//				boolean found = false;
+//				for (int z = 0;!found&&z<piece.d();z++) {
+//					for (int x = 0;!found&&x<piece.w();x++) {
+//						int[] colors = new int[piece.h()];
+//						for (int y = 0;!found&&y<piece.h();y++) {
+//							if (piece.get(x, y, z)!=0) piece.set(x, y, z, 1);
+//							colors[y] = piece.get(x, y, z);
+//						}
+//						for (int i = 0;i<OVERHANGS.length;i++) {
+//							System.out.println(Arrays.toString(colors)+"\t"+Arrays.toString(OVERHANGS[i]));
+//							if (colors.length!=OVERHANGS[i].length) continue;
+//							boolean match = true;
+//							for (int j = 0;j<OVERHANGS[i].length;j++) {
+//								if (colors[j]!=OVERHANGS[i][j]) match = false;
+//							}
+//							if (match) {
+//								System.out.println("found\t"+safeSides+"\n"+piece);
+//								found = true;
+//								break;
 //							}
 //						}
 //					}
 //				}
-////			System.out.println("\n"+piece+"o "+o+"\toverhangs "+overhangs+"\tcount "+count+"\tprintable "+printable);
-//				if (overhangs==0) {
-//					hasOverhang = false;
-//					break;
-//				}
+//				if (found) safeSides--;
 //			}
-//			if (!hasOverhang) continue;
-//			System.out.println(piece);
-//			return true;
+//			if (safeSides==0) return true;
 //		}
 //		return false;
 //	}
@@ -367,20 +376,6 @@ public class Generator implements GeneratorData {
 		Random rand = new Random();
 		for (int i = 0;i<pieceLayouts.size();i++) {
 			Layout piece = new Layout(pieceLayouts.get(i));
-//			if (DIRECTIONS) {
-//				boolean found = false;
-//				for (int z = 0;!found&&z<SIZE;z++) {
-//					for (int y = 0;!found&&y<SIZE;y++) {
-//						for (int x = 0;!found&&x<SIZE;x++) {
-//							if (x==1&&y==1&&z==1) continue;
-//							if (piece.get(x, y, z)!=0) {
-//								piece.set(x, y, z, getDir(x, y, z));
-//								found = true;
-//							}
-//						}
-//					}
-//				}
-//			}
 			piece.trim();
 			if (HIDE_SOLUTION) piece.rotate(rand.nextInt(4), 3, 1);
 			pieces.add(piece);
@@ -402,3 +397,45 @@ public class Generator implements GeneratorData {
 //	}
 }
 
+/*
+tricky:
+331
+441
+411
+---
+321
+322
+415
+---
+225
+355
+445
+*/
+
+/*
+231
+231
+211
+---
+511
+335
+224
+---
+555
+345
+444
+*/
+
+/*
+321
+322
+334
+---
+321
+444
+534
+---
+221
+511
+555
+*/

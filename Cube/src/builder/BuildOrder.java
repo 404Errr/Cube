@@ -33,7 +33,7 @@ public class BuildOrder implements BuilderData {
 			for (int y = 0;y<h();y++) {
 				for (int x = 0;x<w();x++) {
 					if (get(x, y, z).getColor()!=0) {
-						int neighbors = 0;//TODO
+//						int neighbors = 0;//TODO
 						min = new Pointer(x, y, z);
 					}
 				}

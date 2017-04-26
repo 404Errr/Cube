@@ -43,7 +43,7 @@ public class Piece extends Layout implements MainData, Comparable<Piece> {
 			}
 		}
 		float totalThis = centerThis*CENTER+edgeThis*EDGE+cornerThis*CORNER+middleThis*MIDDLE;
-		float totalThat = centerThat*CENTER+edgeThat*EDGE+cornerThat*CORNER+middleThis*MIDDLE;
+		float totalThat = centerThat*CENTER+edgeThat*EDGE+cornerThat*CORNER+middleThat*MIDDLE;
 		//middle, center, edge, corner
 //		System.out.println(middleThis+" "+centerThis+" "+edgeThis+" "+cornerThis+"\t\t"+middleThat+" "+centerThat+" "+edgeThat+" "+cornerThat+"\t\t"+totalThis+" "+totalThat);
 		if (totalThis<totalThat) return -1;
