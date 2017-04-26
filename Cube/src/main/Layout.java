@@ -1,9 +1,10 @@
 package main;
 
+import data.GeneratorData;
 import data.MainData;
 import data.SolverData;
 
-public class Layout implements MainData, SolverData {
+public class Layout implements MainData, SolverData, GeneratorData {
 	protected int[][][] cubies;
 
 	public Layout(int size) {
@@ -14,7 +15,7 @@ public class Layout implements MainData, SolverData {
 		this.cubies = layout;
 		if (d()>SIZE||h()>SIZE||w()>SIZE) throw new IllegalArgumentException(d()+"x"+h()+"x"+w()+"\t is too big");
 	}
-	
+
 	public void trim() {
 		int[] tFR = {d(), h(), w()}, dBL = {0, 0, 0};//z, y, x
 		for (int z = 0;z<d();z++) {
@@ -123,11 +124,11 @@ public class Layout implements MainData, SolverData {
 		}
 		return true;
 	}
-	
+
 	public void reset() {
 		cubies = new int[SIZE][SIZE][SIZE];
 	}
-	
+
 	public int get(int x, int y, int z) {
 		return cubies[z][y][x];
 	}
@@ -178,18 +179,19 @@ public class Layout implements MainData, SolverData {
 	public boolean isOccupied(int x, int y, int z) {
 		return cubies[z][y][x]!=0;
 	}
-	
+
 	public boolean inBounds(int x, int y, int z) {
 		return x>=0&&y>=0&&z>=0&&x<w()&&y<h()&&z<d();
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder str = new StringBuilder();
 		for (int z = 0;z<d();z++) {
 			for (int y = 0;y<h();y++) {
 				for (int x = 0;x<w();x++) {
-					str.append(get(x, y, z));
+					/*if (get(x, y, z)>=0||!DIRECTIONS) */str.append(get(x, y, z));
+//					else str.append(getDir(get(x, y, z)));
 				}
 				str.append("\n");
 			}
@@ -200,4 +202,16 @@ public class Layout implements MainData, SolverData {
 		}
 		return str.toString();
 	}
+//
+//	private static String getDir(int dir) {
+//		switch (dir) {
+//		case U: return "U";
+//		case D: return "D";
+//		case L: return "L";
+//		case R: return "R";
+//		case B: return "B";
+//		case F: return "F";
+//		}
+//		return "+";
+//	}
 }

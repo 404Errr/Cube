@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.Stack;
 
 import data.GeneratorData;
 import main.Layout;
@@ -13,116 +12,112 @@ import main.Pointer;
 
 public class Generator implements GeneratorData {
 	private static NavigateableLayout cube;
-	private static Pointer currentPointer;
-	private static boolean print;
-	private static StringBuilder log;
-
-	static {
-		log = new StringBuilder();
-	}
+	private static Pointer pointer;
+	private static StringBuilder log = new StringBuilder();
 
 	public static void generate() {
 		long startTime = System.currentTimeMillis();
 		gen();
-		if (PRINT_LOG_STUFF) {
-			print = true;
-			isValid();
-		}
 		log.append("\n"+cube);
 		if (MAKE_PIECES==new Boolean(true)) {
 			if (HIDE_SOLUTION==new Boolean(true)) for (int i = 0;i<15;i++) log.append("\n");
-			makePieces();
+			makePieces(cube);
 		}
 		System.out.println(log.toString());
-		System.out.print("\n"+(System.currentTimeMillis()-startTime)/1000f+" s\n\n");
+		System.out.println((System.currentTimeMillis()-startTime)/1000f+" s");
 	}
 
-	private static final int BACKTRACK_CHANCE = 3;
-//	private static final int PREVENT_FORWARD_CHANCE = 2;
 	private static void gen() {
 		Random rand = new Random();
-		int color = 1, cubieCount = 0;
+		List<Integer> colors = null;
+		int colorI = 0;
 		boolean reset = true, full = false;
+		List<int[]> moves = new ArrayList<>(Arrays.asList(new int[] {1, 0, 0}, new int[] {0, 1, 0}, new int[] {0, 0, 1}, new int[] {-1, 0, 0}, new int[] {0, -1, 0}, new int[] {0, 0, -1}));
 		do {
 			if (reset) {
 				reset = false;
 				cube = new NavigateableLayout(SIZE);
-				currentPointer = new Pointer(1, 1, 1);
-				color = 1;
-				cubieCount = 0;
+				pointer = new Pointer(1, 1, 1);
+				colors = getColorList();
+				colorI = 0;
 			}
 			boolean couldMove = false;
-			Stack<int[]> moves = new Stack<>();
-			moves.addAll(Arrays.asList(new int[] {1, 0, 0}, new int[] {0, 1, 0}, new int[] {0, 0, 1}, new int[] {-1, 0, 0}, new int[] {0, -1, 0}, new int[] {0, 0, -1}));
 			Collections.shuffle(moves);
-			while (!moves.isEmpty()) {
-//			for (int i = 0;i<moves.size();i++) {//TODO
-				int[] move = moves.pop();
-//				int[] move = moves.get(i);
-//				System.out.println(Arrays.toString(moves.get(i)));
-				Pointer tempPointer = currentPointer.getMoved(move[0], move[1], move[2]);
-				if (cube.inBounds(tempPointer)&&((cube.get(tempPointer)==color&&rand.nextInt(BACKTRACK_CHANCE)==0)||!cube.isOccupied(tempPointer))) {
-					currentPointer = tempPointer;
+			for (int i = 0;i<moves.size();i++) {
+				int[] move = moves.get(i);
+				Pointer tempPointer = pointer.getMoved(move[0], move[1], move[2]);
+				if (cube.inBounds(tempPointer)&&((cube.get(tempPointer)==colors.get(colorI)&&rand.nextBoolean())||!cube.isOccupied(tempPointer))) {
+					pointer = tempPointer;
 					couldMove = true;
 					break;
 				}
 			}
-			if (!couldMove||color>PIECE_COUNT) {
+			if (cube.get(pointer)!=colors.get(colorI)) {
+				cube.set(pointer, colors.get(colorI));
+				colorI++;
+			}
+			if (!couldMove||colorI>SIZE*SIZE*SIZE) {
 				reset = true;
-				continue;
-			}
-			if (cube.get(currentPointer)!=color) {
-				cubieCount++;
-				cube.set(currentPointer, color);
-			}
-			if (shouldAdvanceColor(cubieCount)) {
-				color++;
-				cubieCount = 0;
 			}
 			full = cube.isFull();
 			if (full&&!isValid()) reset = true;
 		} while (reset||!full);
 	}
 
-	private static boolean shouldAdvanceColor(int cubieCount) {
-		return cubieCount>=new Random().nextInt(PIECE_SIZE_MAX-PIECE_SIZE_MIN+1)+PIECE_SIZE_MIN;
+	private static List<Integer> getColorList() {
+		int[] counts = new int[PIECE_COUNT];
+		for (int i = 0;i<counts.length;i++) counts[i] = PIECE_SIZE_MIN;
+		int total = PIECE_SIZE_MIN*PIECE_COUNT;
+		Random rand = new Random();
+		while (total<SIZE*SIZE*SIZE) {
+			int color = rand.nextInt(counts.length);
+			if (counts[color]<PIECE_SIZE_MAX) {
+				counts[color]++;
+				total++;
+			}
+		}
+		List<Integer> colorList = new ArrayList<>();
+		for (int i = 0;i<counts.length;i++) {
+			for (int j = 0;j<counts[i];j++) {
+				colorList.add(i+1);
+			}
+		}
+		return colorList;
 	}
 
-	private static boolean isValid() {		
-
+	private static boolean isValid() {
 		if (hasFlat()) {
 //			System.out.println("flat");
 			return false;
 		}
 		if (tooManyOnPlane()) {
-//			System.out.println("boring");
+//			System.out.println("too many on plane");
 			return false;
 		}
-		if (!hasCollision()) {
+		if (hasCollision()) {
 //			System.out.println("has collision");
+			return false;
+		}
+		if (has2DClusters()) {
+//			System.out.println("2d");
 			return false;
 		}
 		if (has3DClusters()) {
 //			System.out.println("3d");
 			return false;
 		}
-		if (has2DClusters()) {
-//			System.out.println("2d");
+//		if (hasOverhang()) {//TODO FIXME
+//			System.out.println("has overhang\n"+cube);
+//			return false;
+//		}
+		if (hasIdentical()) {
+//			System.out.println("has identical);
 			return false;
-		}		
-//		if (hasOverhang()) {//FIXME
-////			System.out.println("hasOverhang\n"+cube);
-//			return false;
-//		}
-
-//		if (hasIdentical()) {
-//			System.out.println("has identical\n\n"+cube);
-//			return false;
-//		}
+		}
 		return true;
 	}
-	
-	private static boolean hasIdentical() {//TODO test
+
+	private static boolean hasIdentical() {
 		List<Layout> pieces = new ArrayList<>();
 		for (int i = 0;i<PIECE_COUNT;i++) {
 			int[][][] pieceLayout = new int[SIZE][SIZE][SIZE];
@@ -142,7 +137,7 @@ public class Generator implements GeneratorData {
 			for (int o = 0;o<6;o++) {//every side
 				pieces.get(i).rotate((o==4)?1:(o==5)?2:0, (o>=1&&o<=4)?1:0, 0);
 				for (int j = 0;j<pieces.size();j++) {
-					if (pieces.get(i).equals(pieces.get(j))) {
+					if (i!=j&&pieces.get(i).equals(pieces.get(j))) {
 						return true;
 					}
 				}
@@ -151,7 +146,7 @@ public class Generator implements GeneratorData {
 		return false;
 	}
 
-//	private static boolean hasOverhang() {//FIXME
+//	private static boolean hasOverhang() {//FIXME TODO
 //		int[][][] pieceLayout = null;
 //		for (int i = 0;i<PIECE_COUNT;i++) {
 //			pieceLayout = new int[SIZE][SIZE][SIZE];
@@ -181,7 +176,7 @@ public class Generator implements GeneratorData {
 //						}
 //					}
 //				}
-////				System.out.println("\n"+piece+"o "+o+"\toverhangs "+overhangs+"\tcount "+count+"\tprintable "+printable);								
+////			System.out.println("\n"+piece+"o "+o+"\toverhangs "+overhangs+"\tcount "+count+"\tprintable "+printable);
 //				if (overhangs==0) {
 //					hasOverhang = false;
 //					break;
@@ -194,11 +189,11 @@ public class Generator implements GeneratorData {
 //		return false;
 //	}
 
-	private static boolean hasCollision() {//FIXME
+	private static boolean hasCollision() {
 		for (int z = 0;z<SIZE;z++) {
 			for (int y = 0;y<SIZE;y++) {
 				for (int x = 0;x<SIZE;x++) {
-					for (int a = 0;a<3;a++) {//2x2x1
+					for (int a = 0;a<3;a++) {
 						int zOLimit = (a==0)?1:2, yOLimit = (a==1)?1:2, xOLimit = (a==2)?1:2;
 						List<Integer> colors = new ArrayList<>();
 						for (int zO = 0;zO<zOLimit;zO++) {
@@ -209,12 +204,11 @@ public class Generator implements GeneratorData {
 								}
 							}
 						}
-						if (colors.size()!=4) continue;
+						if (colors.size()<4) continue;
 						int tl = colors.get(0), tr = colors.get(1), bl = colors.get(2), br = colors.get(3);
-						if (tl==bl||tr==br||tl==tr||tr==br||tl!=br||tr!=bl) continue;
-						return true;
+						if (!(tl==bl||tr==br||tl==tr||tr==br||!(tl==br||tr==bl))) return true;
 					}
-					for (int a = 0;a<3;a++) {//3x1x1
+					for (int a = 0;a<3;a++) {
 						int zOLimit = (a==0)?3:1, yOLimit = (a==1)?3:1, xOLimit = (a==2)?3:1;
 						List<Integer> colors = new ArrayList<>();
 						for (int zO = 0;zO<zOLimit;zO++) {
@@ -226,10 +220,8 @@ public class Generator implements GeneratorData {
 							}
 						}
 						if (colors.size()<3) continue;
-						if (colors.get(0)==colors.get(2)&&colors.get(0)!=colors.get(1)) {
-//							System.out.println("3x1x1\n"+cube);
-							return true;
-						}
+						int f = colors.get(0), m = colors.get(1), l = colors.get(2);
+						if (f==l&&f!=m) return true;
 					}
 				}
 			}
@@ -238,7 +230,6 @@ public class Generator implements GeneratorData {
 	}
 
 	private static boolean has2DClusters() {
-		if (print) log.append("\nclusterCounts2D:\n");
 		for (int z = 0;z<SIZE;z++) {
 			for (int y = 0;y<SIZE;y++) {
 				for (int x = 0;x<SIZE;x++) {
@@ -260,7 +251,6 @@ public class Generator implements GeneratorData {
 						for (int i = 0;i<counts.size();i++) {
 							if (counts.get(i)>=BORING_2D_CLUSTER_COUNT) return true;
 						}
-//						if (print) log.append(counts+"\n");
 					}
 				}
 			}
@@ -269,7 +259,6 @@ public class Generator implements GeneratorData {
 	}
 
 	private static boolean has3DClusters() {
-		if (print) log.append("\nclusterCounts3D:\n");
 		for (int z = 0;z<SIZE-1;z++) {
 			for (int y = 0;y<SIZE-1;y++) {
 				for (int x = 0;x<SIZE-1;x++) {
@@ -288,7 +277,6 @@ public class Generator implements GeneratorData {
 					for (int i = 0;i<counts.size();i++) {
 						if (counts.get(i)>=BORING_3D_CLUSTER_COUNT) return true;
 					}
-					if (print) log.append(counts+"\n");
 				}
 			}
 		}
@@ -340,16 +328,6 @@ public class Generator implements GeneratorData {
 				}
 			}
 		}
-//		if (print) {
-//			for (int i = 0;i<planeCounts.size();i++) {
-//				log.append((i+1)+"\n");
-//				for (int j = 0;j<planeCounts.get(i).length;j++) {
-//					log.append(((j==X)?"x":(j==Y)?"y":"z")+" "+Arrays.toString(planeCounts.get(i)[j])+"\n");
-//				}
-//				log.append("\n");
-//			}
-//			log.append("flatCount: "+flatCount+"\n");
-//		}
 		return flatCount!=0;
 	}
 
@@ -373,44 +351,6 @@ public class Generator implements GeneratorData {
 
 	public static void makePieces(Layout cube) {
 		Generator.cube = new NavigateableLayout(cube.getLayout());
-		List<Integer> colorCount = new ArrayList<>();
-		for (int z = 0;z<SIZE;z++) {
-			for (int y = 0;y<SIZE;y++) {
-				for (int x = 0;x<SIZE;x++) {
-					if (!colorCount.contains(cube.get(x, y, z))) {
-						colorCount.add(cube.get(x, y, z));
-					}
-				}
-			}
-		}
-		List<int[][][]> pieceLayouts = new ArrayList<>();
-		for (int i = 0;i<colorCount.size();i++) {
-			pieceLayouts.add(new int[SIZE][SIZE][SIZE]);
-			for (int z = 0;z<SIZE;z++) {
-				for (int y = 0;y<SIZE;y++) {
-					for (int x = 0;x<SIZE;x++) {
-						int color = i+1;
-						if (cube.get(x, y, z)==color) pieceLayouts.get(i)[z][y][x] = cube.get(x, y, z);
-					}
-				}
-			}
-		}
-		List<Layout> pieces = new ArrayList<>();
-		Random rand = new Random();
-		for (int i = 0;i<pieceLayouts.size();i++) {
-			Layout piece = new Layout(pieceLayouts.get(i));
-			piece.trim();
-			piece.rotate(rand.nextInt(4), 3, 1);
-			pieces.add(piece);
-		}
-		log.append("\n");
-		for (int i = 0;i<pieces.size();i++) {
-			log.append(pieces.get(i)+"\n");
-		}
-		System.out.println(log.toString());
-	}
-
-	private static void makePieces() {
 		List<int[][][]> pieceLayouts = new ArrayList<>();
 		for (int i = 0;i<PIECE_COUNT;i++) {
 			pieceLayouts.add(new int[SIZE][SIZE][SIZE]);
@@ -427,6 +367,20 @@ public class Generator implements GeneratorData {
 		Random rand = new Random();
 		for (int i = 0;i<pieceLayouts.size();i++) {
 			Layout piece = new Layout(pieceLayouts.get(i));
+//			if (DIRECTIONS) {
+//				boolean found = false;
+//				for (int z = 0;!found&&z<SIZE;z++) {
+//					for (int y = 0;!found&&y<SIZE;y++) {
+//						for (int x = 0;!found&&x<SIZE;x++) {
+//							if (x==1&&y==1&&z==1) continue;
+//							if (piece.get(x, y, z)!=0) {
+//								piece.set(x, y, z, getDir(x, y, z));
+//								found = true;
+//							}
+//						}
+//					}
+//				}
+//			}
 			piece.trim();
 			if (HIDE_SOLUTION) piece.rotate(rand.nextInt(4), 3, 1);
 			pieces.add(piece);
@@ -436,5 +390,15 @@ public class Generator implements GeneratorData {
 			log.append(pieces.get(i)+"\n");
 		}
 	}
+//
+//	private static int getDir(int x, int y, int z) {
+//		if (y==0) return U;
+//		if (y==2) return D;
+//		if (x==0) return L;
+//		if (x==2) return R;
+//		if (z==0) return F;
+//		if (z==2) return B;
+//		return -100;
+//	}
 }
 
