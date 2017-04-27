@@ -5,7 +5,7 @@ public interface GeneratorData {
 	boolean HIDE_SOLUTION = false;
 
 	boolean SAVE = true;
-	String PATH = "src/generated";
+	String PATH = "src/cubes";
 
 	float PIECE_COUNT_RATIO = (Size.SIZE==3)?0.2f:0.15f;
 	int PIECE_SIZE_MIN_OFFSET = (Size.SIZE==3)?0:1, PIECE_SIZE_MAX_OFFSET = (Size.SIZE==3)?0:1;

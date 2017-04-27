@@ -48,12 +48,12 @@ public class Generator implements MainData, GeneratorData {
 				reset = false;
 				cube = new NavigateableLayout(SIZE);
 				pointer = new Pointer(SIZE/2, SIZE/2, SIZE/2);
-//				Collections.shuffle(moves);
 				colors = getColorList();
 				colorI = 0;
 			}
 			boolean couldMove = false;
-			Collections.shuffle(moves);
+			Collections.swap(moves, rand.nextInt(moves.size()), rand.nextInt(moves.size()));
+//			Collections.shuffle(moves);
 			for (int i = 0;i<moves.size();i++) {
 				int[] move = moves.get(i);
 				Pointer tempPointer = pointer.getMoved(move[0], move[1], move[2]);
@@ -97,7 +97,7 @@ public class Generator implements MainData, GeneratorData {
 	}
 
 	private static boolean isValid() {
-		if (CHECK_FLAT==new Boolean(true)&&hasFlat()) {
+		if (CHECK_FLAT==T&&hasFlat()) {
 			if (CHECK_PRINT) System.out.println("flat");
 			return false;
 		}
@@ -128,28 +128,17 @@ public class Generator implements MainData, GeneratorData {
 		return true;
 	}
 
-	private static boolean hasIdentical() {//FIXME
-		List<Layout> pieces = new ArrayList<>();
-		for (int i = 0;i<PIECE_COUNT;i++) {
-			int[][][] pieceLayout = new int[SIZE][SIZE][SIZE];
-			for (int z = 0;z<SIZE;z++) {
-				for (int y = 0;y<SIZE;y++) {
-					for (int x = 0;x<SIZE;x++) {
-						int color = i+1;
-						if (cube.get(x, y, z)==color) pieceLayout[z][y][x] = cube.get(x, y, z);
-					}
-				}
-			}
-			Layout piece = new Layout(pieceLayout);
-			piece.trim();
-			pieces.add(piece);
-		}
+	private static boolean hasIdentical() {
+		List<Layout> pieces = getPieces();
 		for (int i = 0;i<pieces.size();i++) {
 			for (int o = 0;o<6;o++) {
 				pieces.get(i).rotate((o==4)?1:(o==5)?2:0, (o>=1&&o<=4)?1:0, 0);
-				for (int j = 0;j<pieces.size();j++) {
-					if (i!=j&&pieces.get(i).equals(pieces.get(j))) {
-						return true;
+				for (int r = 0;r<4;r++) {
+					pieces.get(i).rotate(0, 0, 1);
+					for (int j = 0;j<pieces.size();j++) {
+						if (i!=j&&pieces.get(i).equals(pieces.get(j))) {
+							return true;
+						}
 					}
 				}
 			}
@@ -369,6 +358,25 @@ public class Generator implements MainData, GeneratorData {
 		return planeCounts;
 	}
 
+	public static List<Layout> getPieces() {
+		List<Layout> pieces = new ArrayList<>();
+		for (int i = 0;i<PIECE_COUNT;i++) {
+			int[][][] pieceLayout = new int[SIZE][SIZE][SIZE];
+			for (int z = 0;z<SIZE;z++) {
+				for (int y = 0;y<SIZE;y++) {
+					for (int x = 0;x<SIZE;x++) {
+						int color = i+1;
+						if (cube.get(x, y, z)==color) pieceLayout[z][y][x] = cube.get(x, y, z);
+					}
+				}
+			}
+			Layout piece = new Layout(pieceLayout);
+			piece.trim();
+			pieces.add(piece);
+		}
+		return pieces;
+	}
+
 	public static void makePieces(Layout cube) {
 		Generator.cube = new NavigateableLayout(cube.getLayout());
 		List<int[][][]> pieceLayouts = new ArrayList<>();
@@ -408,46 +416,3 @@ public class Generator implements MainData, GeneratorData {
 	}
 
 }
-
-/*
-tricky:
-331
-441
-411
----
-321
-322
-415
----
-225
-355
-445
-*/
-
-/*
-231
-231
-211
----
-511
-335
-224
----
-555
-345
-444
-*/
-
-/*
-321
-322
-334
----
-321
-444
-534
----
-221
-511
-555
-*/
