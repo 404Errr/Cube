@@ -109,7 +109,7 @@ public class Generator implements MainData, GeneratorData {
 			if (CHECK_PRINT) System.out.println("potential collision");
 			return false;
 		}
-		if (CHECK_2D_CLUSTERS==T&&has2DClusters()) {
+		if (CHECK_2D_CLUSTERS>0&&has2DClusters()) {
 			if (CHECK_PRINT) System.out.println("2d");
 			return false;
 		}
@@ -239,6 +239,7 @@ public class Generator implements MainData, GeneratorData {
 	}
 
 	private static boolean has2DClusters() {
+		int count = 0;
 		for (int z = 0;z<SIZE;z++) {
 			for (int y = 0;y<SIZE;y++) {
 				for (int x = 0;x<SIZE;x++) {
@@ -258,7 +259,8 @@ public class Generator implements MainData, GeneratorData {
 							}
 						}
 						for (int i = 0;i<counts.size();i++) {
-							if (counts.get(i)>=BORING_CLUSTER_2D_COUNT) return true;
+							if (counts.get(i)>=4) count++;//TODO test
+							if (count>CHECK_2D_CLUSTERS) return true;
 						}
 					}
 				}
