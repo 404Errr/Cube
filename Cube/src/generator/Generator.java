@@ -25,6 +25,8 @@ public class Generator implements MainData, GeneratorData {
 
 	public static void generate() {
 		long startTime = System.currentTimeMillis();
+		System.out.println("boring plane: "+BORING_PLANE_COUNT);
+		System.out.println("max 2d: "+MAX_2D_CLUSTERS);
 		System.out.println(SIZE+"x"+SIZE/*+"x"+SIZE*/+"\tpieces: "+PIECE_COUNT+"\tpiece size: "+PIECE_SIZE_MIN+"-"+PIECE_SIZE_MAX);
 		gen();
 		log.append("\n"+cube);
@@ -71,7 +73,7 @@ public class Generator implements MainData, GeneratorData {
 				reset = true;
 			}
 			full = cube.isFull();
-			if (full&&!isValid()) reset = true;
+			if (full&&!(isValid())) reset = true;
 		} while (reset||!full);
 	}
 
@@ -97,6 +99,7 @@ public class Generator implements MainData, GeneratorData {
 	}
 
 	private static boolean isValid() {
+		if (RUN_CHECKS!=T) return true;
 		if (CHECK_FLAT==T&&hasFlat()) {
 			if (CHECK_PRINT) System.out.println("flat");
 			return false;
@@ -109,7 +112,7 @@ public class Generator implements MainData, GeneratorData {
 			if (CHECK_PRINT) System.out.println("potential collision");
 			return false;
 		}
-		if (CHECK_2D_CLUSTERS>0&&has2DClusters()) {
+		if (MAX_2D_CLUSTERS>0&&has2DClusters()) {
 			if (CHECK_PRINT) System.out.println("2d");
 			return false;
 		}
@@ -259,8 +262,8 @@ public class Generator implements MainData, GeneratorData {
 							}
 						}
 						for (int i = 0;i<counts.size();i++) {
-							if (counts.get(i)>=4) count++;//TODO test
-							if (count>CHECK_2D_CLUSTERS) return true;
+							if (counts.get(i)>=4) count++;
+							if (count>MAX_2D_CLUSTERS) return true;
 						}
 					}
 				}
@@ -407,7 +410,8 @@ public class Generator implements MainData, GeneratorData {
 
 	public static void save(Layout cube) {
 		try {
-			String name = new SimpleDateFormat("dd-MM-yy HH_mm_ss").format(new Date());
+			String name = new SimpleDateFormat("MM-dd-yy HH_mm_ss").format(new Date());
+			name = SIZE+"x"+SIZE+" "+PIECE_COUNT+" "+PIECE_SIZE_MIN+"-"+PIECE_SIZE_MAX+" "+name;
 			BufferedWriter bw = new BufferedWriter(new FileWriter(new File(PATH+"/"+name)));
 			bw.write(cube.toString());
 			bw.close();
