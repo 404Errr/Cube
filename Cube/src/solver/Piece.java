@@ -1,9 +1,10 @@
 package solver;
 
 import data.MainData;
+import data.SolverData;
 import main.Layout;
 
-public class Piece extends Layout implements MainData, Comparable<Piece> {
+public class Piece extends Layout implements MainData, SolverData, Comparable<Piece> {
 	public Piece(int size) {
 		super(size);
 	}

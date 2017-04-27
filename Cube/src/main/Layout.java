@@ -2,9 +2,8 @@ package main;
 
 import data.GeneratorData;
 import data.MainData;
-import data.SolverData;
 
-public class Layout implements MainData, SolverData, GeneratorData {
+public class Layout implements MainData, GeneratorData {
 	protected int[][][] cubies;
 
 	public Layout(int size) {
@@ -186,32 +185,27 @@ public class Layout implements MainData, SolverData, GeneratorData {
 
 	@Override
 	public String toString() {
+		Layout layout = this;
+		if (COMPACT) {
+			for (int o = 0;o<6;o++) {
+				Layout temp = this.clone();
+				temp.rotate((o==4)?1:(o==5)?2:0, (o>=1&&o<=4)?1:0, 0);
+				if (temp.d()<layout.d()) layout = temp;
+			}
+		}
 		StringBuilder str = new StringBuilder();
-		for (int z = 0;z<d();z++) {
-			for (int y = 0;y<h();y++) {
-				for (int x = 0;x<w();x++) {
-					/*if (get(x, y, z)>=0||!DIRECTIONS) */str.append(get(x, y, z));
-//					else str.append(getDir(get(x, y, z)));
+		for (int z = 0;z<layout.d();z++) {
+			for (int y = 0;y<layout.h();y++) {
+				for (int x = 0;x<layout.w();x++) {
+					str.append(Integer.toHexString(layout.get(x, y, z)));
 				}
 				str.append("\n");
 			}
-			if (z<d()-1) {
-				for (int i = 0;i<w();i++) str.append("-");
+			if (z<layout.d()-1) {
+				for (int i = 0;i<layout.w();i++) str.append("-");
 				str.append("\n");
 			}
 		}
 		return str.toString();
 	}
-//
-//	private static String getDir(int dir) {
-//		switch (dir) {
-//		case U: return "U";
-//		case D: return "D";
-//		case L: return "L";
-//		case R: return "R";
-//		case B: return "B";
-//		case F: return "F";
-//		}
-//		return "+";
-//	}
 }

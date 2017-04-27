@@ -5,10 +5,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import data.MainData;
 import data.SolverData;
 import main.Layout;
 
-public class Solver implements SolverData {
+public class Solver implements MainData, SolverData {
 	private static List<Layout> solutions;
 //	private static List<Solution> solutions;
 //	private static Stack<Solution> potentialSolutions;
