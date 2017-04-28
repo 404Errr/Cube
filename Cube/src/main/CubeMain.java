@@ -22,7 +22,7 @@ public class CubeMain implements MainData, Data {
 				Generator.generate();
 			}
 			break;
-			hey look over here
+//			hey look over here
 //		case CONVERT://TODO
 //			Converter.convert();
 		default:
