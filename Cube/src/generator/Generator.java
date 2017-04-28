@@ -27,16 +27,11 @@ public class Generator implements MainData, GeneratorData {
 
 	public static void generate() {
 		long startTime = System.currentTimeMillis();
-//		System.out.println("boring plane: "+BORING_PLANE_COUNT);
-//		System.out.println("max 2d: "+MAX_2D_CLUSTERS);
 		System.out.println(SIZE+"x"+SIZE/*+"x"+SIZE*/+"\tpieces: "+PIECE_COUNT+"\tpiece size: "+PIECE_SIZE_MIN+"-"+PIECE_SIZE_MAX);
 		gen();
 		log.append("\n"+cube);
-		if (MAKE_PIECES==T) {
-			if (HIDE_SOLUTION==T) for (int i = 0;i<15;i++) log.append("\n");
-			makePieces(cube);
-			save(cube);
-		}
+		if (MAKE_PIECES==T) showPieces(cube);
+		if (SAVE==T) save(cube);
 		System.out.println(log.toString());
 		System.out.println((System.currentTimeMillis()-startTime)/1000f+" s");
 	}
@@ -55,6 +50,7 @@ public class Generator implements MainData, GeneratorData {
 				cube = new NavigateableLayout(SIZE);
 				pointer = new Pointer(SIZE/2, SIZE/2, SIZE/2);
 				colors = getColorList();
+				System.out.println(getColorList());
 				colorI = 0;
 			}
 			boolean couldMove = false;
@@ -76,7 +72,7 @@ public class Generator implements MainData, GeneratorData {
 				cube.set(pointer, colors.get(colorI));
 				colorI++;
 			}
-			if (!couldMove||colorI>SIZE*SIZE*SIZE) {
+			if (!couldMove||colorI>colors.size()-1) {
 				reset = true;
 			}
 			full = cube.isFull();
@@ -88,7 +84,7 @@ public class Generator implements MainData, GeneratorData {
 	private static List<Integer> getColorList() {
 		int[] counts = new int[PIECE_COUNT];
 		for (int i = 0;i<counts.length;i++) counts[i] = PIECE_SIZE_MIN;
-		int total = PIECE_SIZE_MIN*PIECE_COUNT;
+		int total = PIECE_SIZE_MIN*(PIECE_COUNT);
 		Random rand = new Random();
 		while (total<SIZE*SIZE*SIZE) {
 			int color = rand.nextInt(counts.length);
@@ -390,7 +386,7 @@ public class Generator implements MainData, GeneratorData {
 		return pieces;
 	}
 
-	public static void makePieces(Layout cube) {
+	public static void showPieces(Layout cube) {
 		Generator.cube = new NavigateableLayout(cube.getLayout());
 		List<int[][][]> pieceLayouts = new ArrayList<>();
 		for (int i = 0;i<PIECE_COUNT;i++) {

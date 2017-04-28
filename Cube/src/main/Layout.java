@@ -12,7 +12,7 @@ public class Layout implements MainData, GeneratorData {
 
 	public Layout(int[][][] layout) {
 		this.cubies = layout;
-		if (d()>SIZE||h()>SIZE||w()>SIZE) throw new IllegalArgumentException(d()+"x"+h()+"x"+w()+"\t is too big");
+//		if (d()>SIZE||h()>SIZE||w()>SIZE) throw new IllegalArgumentException(d()+"x"+h()+"x"+w()+"\t is too big");
 	}
 
 	public void trim() {

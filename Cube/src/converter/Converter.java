@@ -3,12 +3,10 @@ package converter;
 import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 import data.ConverterData;
 import main.Layout;
-import util.Util;
 
 public class Converter implements ConverterData {
 	public static void convert() {
@@ -29,7 +27,7 @@ public class Converter implements ConverterData {
 			e.printStackTrace();
 		}		
 		int[][][] raw = new int[size][size][size];
-		System.out.println(size);
+		System.out.println("size: "+size);
 		int z = 0, y = 0;
 		for (int i = 0;i<lines.size();i++) {
 			String line = lines.get(i);
@@ -50,14 +48,17 @@ public class Converter implements ConverterData {
 		for (int d = 0;d<size;d++) {
 			str.append("\t{\n");
 			for (int h = 0;h<size;h++) {
-				str.append("\t\t{\n");
+				str.append("\t\t{");
 				for (int w = 0;w<size;w++) {
 					str.append(raw[d][h][w]);
 					if (w<size-1) str.append(",");
 				}
-				str.append("},\n");
+				str.append("},");
+				if (h<size-1) str.append("\n");
 			}
+			str.append("\t\n\t},\n");
 		}
+		str.append("};");
 		System.out.println(str.toString());
 	}
 }

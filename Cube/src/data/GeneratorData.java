@@ -2,15 +2,18 @@ package data;
 
 public interface GeneratorData {
 	boolean MAKE_PIECES = true, COMPACT = true;
-	boolean HIDE_SOLUTION = false;
 
 	boolean SAVE = true;
 	String PATH = "src/cubes";
 
+//	blah
+//	int[][][] START_WITH = Data.TEST_START;//TODO
+	
 //	float PIECE_COUNT_RATIO = 5;//0.2f;
-	float PIECE_COUNT_RATIO = 6;//0.2f;
-	int PIECE_SIZE_MIN_OFFSET = MainData.SIZE-3, PIECE_SIZE_MAX_OFFSET = MainData.SIZE-3;
+	float PIECE_COUNT_RATIO = MainData.SIZE*2-1;//0.2f;
+	int PIECE_SIZE_MIN_OFFSET = MainData.SIZE%3, PIECE_SIZE_MAX_OFFSET = MainData.SIZE%3;
 
+//	int PIECE_COUNT = 8;
 	int PIECE_COUNT = (int) (MainData.SIZE*MainData.SIZE*MainData.SIZE/PIECE_COUNT_RATIO);
 	int PIECE_SIZE_MIN = (int) (Math.floor((MainData.SIZE*MainData.SIZE*MainData.SIZE)/(float) PIECE_COUNT)-PIECE_SIZE_MIN_OFFSET);
 	int PIECE_SIZE_MAX = (int) (Math.ceil((MainData.SIZE*MainData.SIZE*MainData.SIZE)/(float) PIECE_COUNT)+PIECE_SIZE_MAX_OFFSET);
@@ -25,7 +28,7 @@ public interface GeneratorData {
 	boolean CHECK_FLAT = true;
 	boolean CHECK_TOO_MANY_ON_PLANE = true;
 	boolean CHECK_COLLISION = true;
-	int MAX_2D_CLUSTERS = (MainData.SIZE-3)*3;
+	int MAX_2D_CLUSTERS = 1+(MainData.SIZE-3)*3;
 	boolean CHECK_3D_CLUSTERS = false;
 	boolean CHECK_IDENTICAL = true;
 
