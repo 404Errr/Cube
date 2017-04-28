@@ -19,6 +19,8 @@ import main.Pointer;
 
 public class Generator implements MainData, GeneratorData {
 	private static boolean T = true;
+	private static int Z = 0;
+	
 	private static NavigateableLayout cube;
 	private static Pointer pointer;
 	private static StringBuilder log = new StringBuilder();
@@ -118,7 +120,7 @@ public class Generator implements MainData, GeneratorData {
 			if (CHECK_PRINT) System.out.println("potential collision");
 			return false;
 		}
-		if (MAX_2D_CLUSTERS>0&&has2DClusters()) {
+		if (MAX_2D_CLUSTERS>Z&&has2DClusters()) {
 			if (CHECK_PRINT) System.out.println("2d");
 			return false;
 		}
