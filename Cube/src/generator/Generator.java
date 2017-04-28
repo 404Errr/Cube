@@ -25,8 +25,8 @@ public class Generator implements MainData, GeneratorData {
 
 	public static void generate() {
 		long startTime = System.currentTimeMillis();
-		System.out.println("boring plane: "+BORING_PLANE_COUNT);
-		System.out.println("max 2d: "+MAX_2D_CLUSTERS);
+//		System.out.println("boring plane: "+BORING_PLANE_COUNT);
+//		System.out.println("max 2d: "+MAX_2D_CLUSTERS);
 		System.out.println(SIZE+"x"+SIZE/*+"x"+SIZE*/+"\tpieces: "+PIECE_COUNT+"\tpiece size: "+PIECE_SIZE_MIN+"-"+PIECE_SIZE_MAX);
 		gen();
 		log.append("\n"+cube);
@@ -45,8 +45,10 @@ public class Generator implements MainData, GeneratorData {
 		int colorI = 0;
 		boolean reset = true, full;
 		List<int[]> moves = new ArrayList<>(Arrays.asList(new int[] {1, 0, 0}, new int[] {0, 1, 0}, new int[] {0, 0, 1}, new int[] {-1, 0, 0}, new int[] {0, -1, 0}, new int[] {0, 0, -1}));
+		StringBuilder path = null;
 		do {
 			if (reset) {
+				path = new StringBuilder();
 				reset = false;
 				cube = new NavigateableLayout(SIZE);
 				pointer = new Pointer(SIZE/2, SIZE/2, SIZE/2);
@@ -65,6 +67,9 @@ public class Generator implements MainData, GeneratorData {
 					break;
 				}
 			}
+			path.append(pointer.toString());
+			if (cube.get(pointer)!=colors.get(colorI)) path.append("    "+colors.get(colorI));
+			path.append("\n");
 			if (cube.get(pointer)!=colors.get(colorI)) {
 				cube.set(pointer, colors.get(colorI));
 				colorI++;
@@ -75,6 +80,7 @@ public class Generator implements MainData, GeneratorData {
 			full = cube.isFull();
 			if (full&&!(isValid())) reset = true;
 		} while (reset||!full);
+		System.out.println(path);
 	}
 
 	private static List<Integer> getColorList() {
@@ -263,7 +269,7 @@ public class Generator implements MainData, GeneratorData {
 						}
 						for (int i = 0;i<counts.size();i++) {
 							if (counts.get(i)>=4) count++;
-							if (count>MAX_2D_CLUSTERS) return true;
+							if (count>=MAX_2D_CLUSTERS) return true;
 						}
 					}
 				}
