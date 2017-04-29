@@ -19,8 +19,8 @@ import main.Pointer;
 
 public class Generator implements MainData, GeneratorData {
 	private static boolean T = true;
-	private static int Z = 0;
-	
+	private static int ZERO = 0;
+
 	private static NavigateableLayout cube;
 	private static Pointer pointer;
 	private static StringBuilder log = new StringBuilder();
@@ -50,7 +50,6 @@ public class Generator implements MainData, GeneratorData {
 				cube = new NavigateableLayout(SIZE);
 				pointer = new Pointer(SIZE/2, SIZE/2, SIZE/2);
 				colors = getColorList();
-				System.out.println(getColorList());
 				colorI = 0;
 			}
 			boolean couldMove = false;
@@ -72,7 +71,7 @@ public class Generator implements MainData, GeneratorData {
 				cube.set(pointer, colors.get(colorI));
 				colorI++;
 			}
-			if (!couldMove||colorI>colors.size()-1) {
+			if (!couldMove||colorI>SIZE*SIZE*SIZE) {
 				reset = true;
 			}
 			full = cube.isFull();
@@ -112,11 +111,11 @@ public class Generator implements MainData, GeneratorData {
 			if (CHECK_PRINT) System.out.println("too many on plane");
 			return false;
 		}
-		if (CHECK_COLLISION==T&&hasCollision()) {
-			if (CHECK_PRINT) System.out.println("potential collision");
+		if ((CHECK_SURROUNDED_COLLISION==T||CHECK_DIAGONAL_COLLISION==T)&&hasCollision()) {
+			if (CHECK_PRINT) System.out.println("collision");
 			return false;
 		}
-		if (MAX_2D_CLUSTERS>Z&&has2DClusters()) {
+		if (MAX_2D_CLUSTERS>ZERO&&has2DClusters()) {
 			if (CHECK_PRINT) System.out.println("2d");
 			return false;
 		}
@@ -128,10 +127,6 @@ public class Generator implements MainData, GeneratorData {
 			if (CHECK_PRINT) System.out.println("has identical");
 			return false;
 		}
-//		if (CHECK_OVERHANG==t&&hasOverhang()) {
-//			if (CHECK_PRINT) System.out.println("has overhang\n"+cube);
-//			return false;
-//		}
 		return true;
 	}
 
@@ -209,7 +204,7 @@ public class Generator implements MainData, GeneratorData {
 		for (int z = 0;z<SIZE;z++) {
 			for (int y = 0;y<SIZE;y++) {
 				for (int x = 0;x<SIZE;x++) {
-					for (int a = 0;a<3;a++) {
+					if (CHECK_DIAGONAL_COLLISION==T) for (int a = 0;a<3;a++) {
 						int zOLimit = (a==0)?1:2, yOLimit = (a==1)?1:2, xOLimit = (a==2)?1:2;
 						List<Integer> colors = new ArrayList<>();
 						for (int zO = 0;zO<zOLimit;zO++) {
@@ -223,8 +218,9 @@ public class Generator implements MainData, GeneratorData {
 						if (colors.size()<4) continue;
 						int tl = colors.get(0), tr = colors.get(1), bl = colors.get(2), br = colors.get(3);
 						if (!(tl==bl||tr==br||tl==tr||tr==br||!(tl==br||tr==bl))) return true;
+						if (tl==br&&tr==bl&&tl!=tr) return true;
 					}
-					for (int a = 0;a<3;a++) {
+					if (CHECK_SURROUNDED_COLLISION==T) for (int a = 0;a<3;a++) {
 						int zOLimit = (a==0)?3:1, yOLimit = (a==1)?3:1, xOLimit = (a==2)?3:1;
 						List<Integer> colors = new ArrayList<>();
 						for (int zO = 0;zO<zOLimit;zO++) {
@@ -267,7 +263,7 @@ public class Generator implements MainData, GeneratorData {
 						}
 						for (int i = 0;i<counts.size();i++) {
 							if (counts.get(i)>=4) count++;
-							if (count>=MAX_2D_CLUSTERS) return true;
+							if (count>MAX_2D_CLUSTERS) return true;
 						}
 					}
 				}
@@ -293,7 +289,7 @@ public class Generator implements MainData, GeneratorData {
 						}
 					}
 					for (int i = 0;i<counts.size();i++) {
-						if (counts.get(i)>=BORING_CLUSTER_3D_COUNT) return true;
+						if (counts.get(i)>MAX_3D_CLUSTER_SIZE) return true;
 					}
 				}
 			}
@@ -360,7 +356,7 @@ public class Generator implements MainData, GeneratorData {
 					int cubieColor = cube.get(x, y, z);
 					planeCounts.get(cubieColor-1)[X][x]++;
 					planeCounts.get(cubieColor-1)[Y][y]++;
-					planeCounts.get(cubieColor-1)[Z][z]++;
+					planeCounts.get(cubieColor-1)[ZERO][z]++;
 				}
 			}
 		}
