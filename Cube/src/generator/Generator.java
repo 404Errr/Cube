@@ -27,7 +27,7 @@ public class Generator implements MainData, GeneratorData {
 
 	public static void generate() {
 		long startTime = System.currentTimeMillis();
-		System.out.println(SIZE+"x"+SIZE/*+"x"+SIZE*/+"\tpieces: "+PIECE_COUNT+"\tpiece size: "+PIECE_SIZE_MIN+"-"+PIECE_SIZE_MAX);
+		System.out.println(WIDTH+"x"+HEIGHT+"x"+DEPTH+"\tpieces: "+PIECE_COUNT+"\tpiece size: "+PIECE_SIZE_MIN+"-"+PIECE_SIZE_MAX);
 		gen();
 		log.append("\n"+cube);
 		if (MAKE_PIECES==T) showPieces(cube);
@@ -47,8 +47,8 @@ public class Generator implements MainData, GeneratorData {
 			if (reset) {
 				path = new StringBuilder();
 				reset = false;
-				cube = new NavigateableLayout(SIZE);
-				pointer = new Pointer(SIZE/2, SIZE/2, SIZE/2);
+				cube = new NavigateableLayout(WIDTH, HEIGHT, DEPTH);
+				pointer = new Pointer(cube.w()/2, cube.h()/2, cube.d()/2);
 				colors = getColorList();
 				colorI = 0;
 			}
@@ -71,7 +71,7 @@ public class Generator implements MainData, GeneratorData {
 				cube.set(pointer, colors.get(colorI));
 				colorI++;
 			}
-			if (!couldMove||colorI>SIZE*SIZE*SIZE) {
+			if (!couldMove||colorI>cube.w()*cube.h()*cube.d()) {
 				reset = true;
 			}
 			full = cube.isFull();
@@ -85,7 +85,7 @@ public class Generator implements MainData, GeneratorData {
 		for (int i = 0;i<counts.length;i++) counts[i] = PIECE_SIZE_MIN;
 		int total = PIECE_SIZE_MIN*(PIECE_COUNT);
 		Random rand = new Random();
-		while (total<SIZE*SIZE*SIZE) {
+		while (total<DEPTH*HEIGHT*WIDTH) {
 			int color = rand.nextInt(counts.length);
 			if (counts[color]<PIECE_SIZE_MAX) {
 				counts[color]++;
@@ -201,9 +201,9 @@ public class Generator implements MainData, GeneratorData {
 //	}
 
 	private static boolean hasCollision() {
-		for (int z = 0;z<SIZE;z++) {
-			for (int y = 0;y<SIZE;y++) {
-				for (int x = 0;x<SIZE;x++) {
+		for (int z = 0;z<cube.d();z++) {
+			for (int y = 0;y<cube.h();y++) {
+				for (int x = 0;x<cube.w();x++) {
 					if (CHECK_DIAGONAL_COLLISION==T) for (int a = 0;a<3;a++) {
 						int zOLimit = (a==0)?1:2, yOLimit = (a==1)?1:2, xOLimit = (a==2)?1:2;
 						List<Integer> colors = new ArrayList<>();
@@ -243,9 +243,9 @@ public class Generator implements MainData, GeneratorData {
 
 	private static boolean has2DClusters() {
 		int count = 0;
-		for (int z = 0;z<SIZE;z++) {
-			for (int y = 0;y<SIZE;y++) {
-				for (int x = 0;x<SIZE;x++) {
+		for (int z = 0;z<cube.d();z++) {
+			for (int y = 0;y<cube.h();y++) {
+				for (int x = 0;x<cube.w();x++) {
 					for (int a = 0;a<3;a++) {
 						int zOLimit = (a==0)?1:2, yOLimit = (a==1)?1:2, xOLimit = (a==2)?1:2;
 						List<Integer> counts = new ArrayList<>();
@@ -273,9 +273,9 @@ public class Generator implements MainData, GeneratorData {
 	}
 
 	private static boolean has3DClusters() {
-		for (int z = 0;z<SIZE-1;z++) {
-			for (int y = 0;y<SIZE-1;y++) {
-				for (int x = 0;x<SIZE-1;x++) {
+		for (int z = 0;z<cube.d()-1;z++) {
+			for (int y = 0;y<cube.h()-1;y++) {
+				for (int x = 0;x<cube.w()-1;x++) {
 					List<Integer> counts = new ArrayList<>();
 					for (int i = 0;i<PIECE_COUNT;i++) {
 						counts.add(0);
@@ -298,10 +298,10 @@ public class Generator implements MainData, GeneratorData {
 	}
 
 	private static boolean tooManyOnPlane() {
-		int[][][] nCount = new int[SIZE][SIZE][SIZE];
-		for (int z = 0;z<SIZE;z++) {
-			for (int y = 0;y<SIZE;y++) {
-				for (int x = 0;x<SIZE;x++) {
+		int[][][] nCount = new int[cube.d()][cube.h()][cube.w()];
+		for (int z = 0;z<cube.d();z++) {
+			for (int y = 0;y<cube.h();y++) {
+				for (int x = 0;x<cube.w();x++) {
 					int count = 0, cubieColor = cube.get(x, y, z);
 					for (int zO = -1;zO<=1;zO++) {
 						for (int yO = -1;yO<=1;yO++) {
@@ -337,7 +337,7 @@ public class Generator implements MainData, GeneratorData {
 						zeroCount++;
 					}
 				}
-				if (zeroCount==SIZE-1) {
+				if (zeroCount==planeCounts.get(i).length-1) {
 					flatCount++;
 				}
 			}
@@ -348,15 +348,16 @@ public class Generator implements MainData, GeneratorData {
 	private static List<int[][]> getPlaneCounts() {
 		List<int[][]> planeCounts = new ArrayList<>();
 		for (int i = 0;i<PIECE_COUNT;i++) {
-			planeCounts.add(new int[3][SIZE]);
+			planeCounts.add(new int[3][]);
+			for (int j = 0;j<3;j++) planeCounts.get(i)[j] = new int[(j==0)?cube.d():(j==1)?cube.h():cube.w()];
 		}
-		for (int z = 0;z<SIZE;z++) {
-			for (int y = 0;y<SIZE;y++) {
-				for (int x = 0;x<SIZE;x++) {
+		for (int z = 0;z<cube.d();z++) {
+			for (int y = 0;y<cube.h();y++) {
+				for (int x = 0;x<cube.w();x++) {
 					int cubieColor = cube.get(x, y, z);
 					planeCounts.get(cubieColor-1)[X][x]++;
 					planeCounts.get(cubieColor-1)[Y][y]++;
-					planeCounts.get(cubieColor-1)[ZERO][z]++;
+					planeCounts.get(cubieColor-1)[Z][z]++;
 				}
 			}
 		}
@@ -366,10 +367,10 @@ public class Generator implements MainData, GeneratorData {
 	public static List<Layout> getPieces() {
 		List<Layout> pieces = new ArrayList<>();
 		for (int i = 0;i<PIECE_COUNT;i++) {
-			int[][][] pieceLayout = new int[SIZE][SIZE][SIZE];
-			for (int z = 0;z<SIZE;z++) {
-				for (int y = 0;y<SIZE;y++) {
-					for (int x = 0;x<SIZE;x++) {
+			int[][][] pieceLayout = new int[cube.d()][cube.h()][cube.w()];
+			for (int z = 0;z<cube.d();z++) {
+				for (int y = 0;y<cube.h();y++) {
+					for (int x = 0;x<cube.w();x++) {
 						int color = i+1;
 						if (cube.get(x, y, z)==color) pieceLayout[z][y][x] = cube.get(x, y, z);
 					}
@@ -386,10 +387,10 @@ public class Generator implements MainData, GeneratorData {
 		Generator.cube = new NavigateableLayout(cube.getLayout());
 		List<int[][][]> pieceLayouts = new ArrayList<>();
 		for (int i = 0;i<PIECE_COUNT;i++) {
-			pieceLayouts.add(new int[SIZE][SIZE][SIZE]);
-			for (int z = 0;z<SIZE;z++) {
-				for (int y = 0;y<SIZE;y++) {
-					for (int x = 0;x<SIZE;x++) {
+			pieceLayouts.add(new int[cube.d()][cube.h()][cube.w()]);
+			for (int z = 0;z<cube.d();z++) {
+				for (int y = 0;y<cube.h();y++) {
+					for (int x = 0;x<cube.w();x++) {
 						int color = i+1;
 						if (cube.get(x, y, z)==color) pieceLayouts.get(i)[z][y][x] = cube.get(x, y, z);
 					}
@@ -411,7 +412,7 @@ public class Generator implements MainData, GeneratorData {
 	public static void save(Layout cube) {
 		try {
 			String name = new SimpleDateFormat("MM-dd-yy HH_mm_ss").format(new Date());
-			name = SIZE+"x"+SIZE+" "+PIECE_COUNT+" "+PIECE_SIZE_MIN+"-"+PIECE_SIZE_MAX+" "+name;
+			name = cube.w()+"x"+cube.h()+"x"+cube.d()+" "+PIECE_COUNT+" "+PIECE_SIZE_MIN+"-"+PIECE_SIZE_MAX+" "+name;
 			BufferedWriter bw = new BufferedWriter(new FileWriter(new File(PATH+"/"+name)));
 			bw.write(cube.toString());
 			bw.close();

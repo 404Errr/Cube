@@ -5,14 +5,14 @@ import main.Layout;
 import main.Pointer;
 
 public class NavigateableLayout extends Layout implements GeneratorData {
-	public NavigateableLayout(int size) {
-		super(size);
+	public NavigateableLayout(int w, int h, int d) {
+		super(w, h, d);
 	}
 
 	public NavigateableLayout(int[][][] layout) {
 		super(layout);
 	}
-	
+
 	public void set(Pointer pointer, int val) {
 		cubies[pointer.getZ()][pointer.getY()][pointer.getX()] = val;
 	}

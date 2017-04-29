@@ -6,15 +6,12 @@ public interface GeneratorData {
 	boolean SAVE = true;
 	String PATH = "src/cubes";
 
-//	blah
-//	int[][][] START_WITH = Data.TEST_START;//TODO
+	float PIECE_COUNT_RATIO = ((MainData.WIDTH+MainData.HEIGHT+MainData.DEPTH)/3f)*2-1;
+	int PIECE_SIZE_MIN_OFFSET = (int) ((MainData.WIDTH+MainData.HEIGHT+MainData.DEPTH)/3f%3), PIECE_SIZE_MAX_OFFSET = (int) ((MainData.WIDTH+MainData.HEIGHT+MainData.DEPTH)/3f%3);
 
-	float PIECE_COUNT_RATIO = MainData.SIZE*2-1;
-	int PIECE_SIZE_MIN_OFFSET = MainData.SIZE%3, PIECE_SIZE_MAX_OFFSET = MainData.SIZE%3;
-
-	int PIECE_COUNT = (int) (MainData.SIZE*MainData.SIZE*MainData.SIZE/PIECE_COUNT_RATIO);
-	int PIECE_SIZE_MIN = (int) (Math.floor((MainData.SIZE*MainData.SIZE*MainData.SIZE)/(float) PIECE_COUNT)-PIECE_SIZE_MIN_OFFSET);
-	int PIECE_SIZE_MAX = (int) (Math.ceil((MainData.SIZE*MainData.SIZE*MainData.SIZE)/(float) PIECE_COUNT)+PIECE_SIZE_MAX_OFFSET);
+	int PIECE_COUNT = (int) (MainData.WIDTH*MainData.HEIGHT*MainData.DEPTH/PIECE_COUNT_RATIO);
+	int PIECE_SIZE_MIN = (int) (Math.floor((MainData.WIDTH*MainData.HEIGHT*MainData.DEPTH)/(float) PIECE_COUNT)-PIECE_SIZE_MIN_OFFSET);
+	int PIECE_SIZE_MAX = (int) (Math.ceil((MainData.WIDTH*MainData.HEIGHT*MainData.DEPTH)/(float) PIECE_COUNT)+PIECE_SIZE_MAX_OFFSET);
 
 	boolean CHECK_PRINT = false;
 	boolean RUN_CHECKS = true;
@@ -25,7 +22,7 @@ public interface GeneratorData {
 	boolean CHECK_DIAGONAL_COLLISION = true;
 	boolean CHECK_SURROUNDED_COLLISION = false;
 	boolean CHECK_2D_CLUSTERS = true;
-	int MAX_2D_CLUSTERS = 1+(MainData.SIZE-3)*3;
+	int MAX_2D_CLUSTERS = (int) (1+(((MainData.WIDTH+MainData.HEIGHT+MainData.DEPTH)/3f)-3)*3);
 	boolean CHECK_3D_CLUSTERS = false;
 	int MAX_3D_CLUSTER_SIZE = 5;
 	boolean CHECK_IDENTICAL = false;

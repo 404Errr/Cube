@@ -10,6 +10,10 @@ public class Layout implements MainData, GeneratorData {
 		this.cubies = new int[size][size][size];
 	}
 
+	public Layout(int w, int h, int d) {
+		this.cubies = new int[d][h][w];
+	}
+
 	public Layout(int[][][] layout) {
 		this.cubies = layout;
 //		if (d()>SIZE||h()>SIZE||w()>SIZE) throw new IllegalArgumentException(d()+"x"+h()+"x"+w()+"\t is too big");
@@ -122,10 +126,6 @@ public class Layout implements MainData, GeneratorData {
 			}
 		}
 		return true;
-	}
-
-	public void reset() {
-		cubies = new int[SIZE][SIZE][SIZE];
 	}
 
 	public int get(int x, int y, int z) {
