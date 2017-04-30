@@ -2,6 +2,7 @@ package data;
 
 public interface GeneratorData {
 	boolean MAKE_PIECES = false, COMPACT = true;
+	boolean PRINT_PATH = false;
 
 	boolean SAVE = true;
 	String PATH = "src/cubes";
@@ -22,9 +23,9 @@ public interface GeneratorData {
 	boolean CHECK_DIAGONAL_COLLISION = true;
 	boolean CHECK_SURROUNDED_COLLISION = false;
 	boolean CHECK_2D_CLUSTERS = true;
-	int MAX_2D_CLUSTERS = (int) (1+(((MainData.WIDTH+MainData.HEIGHT+MainData.DEPTH)/3f)-3)*3);
+	int MAX_2D_CLUSTERS = (int) ((((MainData.WIDTH+MainData.HEIGHT+MainData.DEPTH)/3f)-3)*3)+1;
 	boolean CHECK_3D_CLUSTERS = false;
 	int MAX_3D_CLUSTER_SIZE = 5;
-	boolean CHECK_IDENTICAL = false;
+	boolean CHECK_IDENTICAL = true;
 
 }

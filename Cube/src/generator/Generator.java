@@ -64,20 +64,20 @@ public class Generator implements MainData, GeneratorData {
 					break;
 				}
 			}
-			path.append(pointer.toString());
-			if (cube.get(pointer)!=colors.get(colorI)) path.append("    "+colors.get(colorI));
-			path.append("\n");
+			if (!couldMove) reset = true;
 			if (cube.get(pointer)!=colors.get(colorI)) {
 				cube.set(pointer, colors.get(colorI));
 				colorI++;
 			}
-			if (!couldMove||colorI>cube.w()*cube.h()*cube.d()) {
-				reset = true;
+			if (PRINT_PATH) {
+				path.append(pointer.toString());
+				if (cube.get(pointer)!=colors.get(colorI)) path.append("    "+colors.get(colorI));
+				path.append("\n");
 			}
 			full = cube.isFull();
 			if (full&&!(isValid())) reset = true;
 		} while (reset||!full);
-		System.out.println(path);
+		if (PRINT_PATH==T) System.out.println(path);
 	}
 
 	private static List<Integer> getColorList() {
@@ -298,22 +298,22 @@ public class Generator implements MainData, GeneratorData {
 	}
 
 	private static boolean tooManyOnPlane() {
-		int[][][] nCount = new int[cube.d()][cube.h()][cube.w()];
-		for (int z = 0;z<cube.d();z++) {
-			for (int y = 0;y<cube.h();y++) {
-				for (int x = 0;x<cube.w();x++) {
-					int count = 0, cubieColor = cube.get(x, y, z);
-					for (int zO = -1;zO<=1;zO++) {
-						for (int yO = -1;yO<=1;yO++) {
-							for (int xO = -1;xO<=1;xO++) {
-								if (cube.inBounds(x+xO, y+yO, z+zO)&&cube.get(x+xO, y+yO, z+zO)==cubieColor) count++;
-							}
-						}
-					}
-					nCount[z][y][x] = count;
-				}
-			}
-		}
+//		int[][][] nCount = new int[cube.d()][cube.h()][cube.w()];
+//		for (int z = 0;z<cube.d();z++) {
+//			for (int y = 0;y<cube.h();y++) {
+//				for (int x = 0;x<cube.w();x++) {
+//					int count = 0, cubieColor = cube.get(x, y, z);
+//					for (int zO = -1;zO<=1;zO++) {
+//						for (int yO = -1;yO<=1;yO++) {
+//							for (int xO = -1;xO<=1;xO++) {
+//								if (cube.inBounds(x+xO, y+yO, z+zO)&&cube.get(x+xO, y+yO, z+zO)==cubieColor) count++;
+//							}
+//						}
+//					}
+//					nCount[z][y][x] = count;
+//				}
+//			}
+//		}
 		boolean tooManyOnPlane = false;
 		List<int[][]> planeCounts = getPlaneCounts();
 		for (int i = 0;i<planeCounts.size();i++) {
