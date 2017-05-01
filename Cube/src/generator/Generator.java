@@ -20,8 +20,8 @@ import main.Pointer;
 
 public class Generator implements MainData, GeneratorData {
 	private static boolean T = true;
-	private static int ZERO = 0;
 
+	private static Move net;
 	private static NavigateableLayout cube;
 	private static Pointer pointer;
 	private static StringBuilder log = new StringBuilder();
@@ -42,25 +42,30 @@ public class Generator implements MainData, GeneratorData {
 		List<Integer> colors = null;
 		int colorI = 0;
 		boolean reset = true, full;
-		List<int[]> moves = new ArrayList<>(Arrays.asList(new int[] {1, 0, 0}, new int[] {0, 1, 0}, new int[] {0, 0, 1}, new int[] {-1, 0, 0}, new int[] {0, -1, 0}, new int[] {0, 0, -1}));
+		List<Move> moves = new ArrayList<>(Arrays.asList(new Move(1, 0, 0), new Move(0, 1, 0), new Move(0, 0, 1), new Move(-1, 0, 0), new Move(0, -1, 0), new Move(0, 0, -1)));
 		StringBuilder path = null;
+		
 		do {
 			if (reset) {
 				path = new StringBuilder();
 				reset = false;
+				
+				net = new Move(0, 0, 0);
 				cube = new NavigateableLayout(WIDTH, HEIGHT, DEPTH);
 				pointer = new Pointer(cube.w()/2, cube.h()/2, cube.d()/2);
 				colors = getColorList();
 				colorI = 0;
 			}
 			boolean couldMove = false;
-			Collections.swap(moves, rand.nextInt(moves.size()), rand.nextInt(moves.size()));
 //			Collections.shuffle(moves);
+			Collections.sort(moves);
+//			Collections.swap(moves, rand.nextInt(moves.size()), rand.nextInt(moves.size()));
 			for (int i = 0;i<moves.size();i++) {
-				int[] move = moves.get(i);
-				Pointer tempPointer = pointer.getMoved(move[0], move[1], move[2]);
+				Move move = moves.get(i);
+				Pointer tempPointer = pointer.getMoved(move.getX(), move.getY(), move.getZ());
 				if (cube.inBounds(tempPointer)&&((cube.get(tempPointer)==colors.get(colorI)&&rand.nextBoolean())||!cube.isOccupied(tempPointer))) {
 					pointer = tempPointer;
+					net.add(move);
 					couldMove = true;
 					break;
 				}
@@ -79,6 +84,7 @@ public class Generator implements MainData, GeneratorData {
 			if (full&&!(isValid())) reset = true;
 		} while (reset||!full);
 		if (PRINT_PATH==T) System.out.println(path);
+		System.out.println(net);
 	}
 
 	private static List<Integer> getColorList() {
@@ -149,58 +155,6 @@ public class Generator implements MainData, GeneratorData {
 		return false;
 	}
 
-	//top-bottom/left-right/back-front
-//	private static final int[][] OVERHANGS = {{1,0}, {1,0,0}, {0,1,0}, {1,1,0}};
-//
-//	private static boolean hasOverhang() {
-//		int[][][] pieceLayout = null;
-//		for (int p = 0;p<PIECE_COUNT;p++) {
-//			pieceLayout = new int[SIZE][SIZE][SIZE];
-//			for (int z = 0;z<SIZE;z++) {
-//				for (int y = 0;y<SIZE;y++) {
-//					for (int x = 0;x<SIZE;x++) {
-//						int color = p+1;
-//						if (cube.get(x, y, z)==color) pieceLayout[z][y][x] = cube.get(x, y, z);
-//					}
-//				}
-//			}
-//			Layout piece = new Layout(pieceLayout);
-//			piece.trim();
-//			System.out.println(piece);
-//			if (piece.d()==1||piece.h()==1||piece.w()==1) continue;
-//			int safeSides = 6;
-//			for (int o = 0;o<6;o++) {
-//				piece.rotate((o==4)?1:(o==5)?2:0, (o>=1&&o<=4)?1:0, 0);
-//				boolean found = false;
-//				for (int z = 0;!found&&z<piece.d();z++) {
-//					for (int x = 0;!found&&x<piece.w();x++) {
-//						int[] colors = new int[piece.h()];
-//						for (int y = 0;!found&&y<piece.h();y++) {
-//							if (piece.get(x, y, z)!=0) piece.set(x, y, z, 1);
-//							colors[y] = piece.get(x, y, z);
-//						}
-//						for (int i = 0;i<OVERHANGS.length;i++) {
-//							System.out.println(Arrays.toString(colors)+"\t"+Arrays.toString(OVERHANGS[i]));
-//							if (colors.length!=OVERHANGS[i].length) continue;
-//							boolean match = true;
-//							for (int j = 0;j<OVERHANGS[i].length;j++) {
-//								if (colors[j]!=OVERHANGS[i][j]) match = false;
-//							}
-//							if (match) {
-//								System.out.println("found\t"+safeSides+"\n"+piece);
-//								found = true;
-//								break;
-//							}
-//						}
-//					}
-//				}
-//				if (found) safeSides--;
-//			}
-//			if (safeSides==0) return true;
-//		}
-//		return false;
-//	}
-
 	private static boolean hasCollision() {
 		for (int z = 0;z<cube.d();z++) {
 			for (int y = 0;y<cube.h();y++) {
@@ -218,8 +172,7 @@ public class Generator implements MainData, GeneratorData {
 						}
 						if (colors.size()<4) continue;
 						int tl = colors.get(0), tr = colors.get(1), bl = colors.get(2), br = colors.get(3);
-						if (!(tl==bl||tr==br||tl==tr||tr==br||!(tl==br||tr==bl))) return true;
-						if (tl==br&&tr==bl&&tl!=tr) return true;
+						if ((!(tl==bl||tr==br||tl==tr||tr==br||!(tl==br||tr==bl)))||(tl==br&&tr==bl&&tl!=tr)) return true;
 					}
 					if (CHECK_SURROUNDED_COLLISION==T) for (int a = 0;a<3;a++) {
 						int zOLimit = (a==0)?3:1, yOLimit = (a==1)?3:1, xOLimit = (a==2)?3:1;
@@ -407,4 +360,58 @@ public class Generator implements MainData, GeneratorData {
 		}
 	}
 
+	public static Move getNet() {
+		return net;
+	}
 }
+//	top-bottom/left-right/back-front
+//	private static final int[][] OVERHANGS = {{1,0}, {1,0,0}, {0,1,0}, {1,1,0}};
+//
+//	private static boolean hasOverhang() {
+//		int[][][] pieceLayout = null;
+//		for (int p = 0;p<PIECE_COUNT;p++) {
+//			pieceLayout = new int[SIZE][SIZE][SIZE];
+//			for (int z = 0;z<SIZE;z++) {
+//				for (int y = 0;y<SIZE;y++) {
+//					for (int x = 0;x<SIZE;x++) {
+//						int color = p+1;
+//						if (cube.get(x, y, z)==color) pieceLayout[z][y][x] = cube.get(x, y, z);
+//					}
+//				}
+//			}
+//			Layout piece = new Layout(pieceLayout);
+//			piece.trim();
+//			System.out.println(piece);
+//			if (piece.d()==1||piece.h()==1||piece.w()==1) continue;
+//			int safeSides = 6;
+//			for (int o = 0;o<6;o++) {
+//				piece.rotate((o==4)?1:(o==5)?2:0, (o>=1&&o<=4)?1:0, 0);
+//				boolean found = false;
+//				for (int z = 0;!found&&z<piece.d();z++) {
+//					for (int x = 0;!found&&x<piece.w();x++) {
+//						int[] colors = new int[piece.h()];
+//						for (int y = 0;!found&&y<piece.h();y++) {
+//							if (piece.get(x, y, z)!=0) piece.set(x, y, z, 1);
+//							colors[y] = piece.get(x, y, z);
+//						}
+//						for (int i = 0;i<OVERHANGS.length;i++) {
+//							System.out.println(Arrays.toString(colors)+"\t"+Arrays.toString(OVERHANGS[i]));
+//							if (colors.length!=OVERHANGS[i].length) continue;
+//							boolean match = true;
+//							for (int j = 0;j<OVERHANGS[i].length;j++) {
+//								if (colors[j]!=OVERHANGS[i][j]) match = false;
+//							}
+//							if (match) {
+//								System.out.println("found\t"+safeSides+"\n"+piece);
+//								found = true;
+//								break;
+//							}
+//						}
+//					}
+//				}
+//				if (found) safeSides--;
+//			}
+//			if (safeSides==0) return true;
+//		}
+//		return false;
+//	}

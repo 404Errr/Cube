@@ -4,6 +4,7 @@ import data.GeneratorData;
 import data.MainData;
 
 public class Layout implements MainData, GeneratorData {
+	private static boolean T = true;
 	protected int[][][] cubies;
 
 	public Layout(int size) {
@@ -186,7 +187,7 @@ public class Layout implements MainData, GeneratorData {
 	@Override
 	public String toString() {
 		Layout layout = this;
-		if (COMPACT) {
+		if (COMPACT==T) {
 			for (int o = 0;o<6;o++) {
 				Layout temp = this.clone();
 				temp.rotate((o==4)?1:(o==5)?2:0, (o>=1&&o<=4)?1:0, 0);
@@ -194,18 +195,50 @@ public class Layout implements MainData, GeneratorData {
 			}
 		}
 		StringBuilder str = new StringBuilder();
-		for (int z = 0;z<layout.d();z++) {
+		if (HORZ==T) {
 			for (int y = 0;y<layout.h();y++) {
-				for (int x = 0;x<layout.w();x++) {
-					str.append(Integer.toHexString(layout.get(x, y, z)));
+				for (int z = 0;z<layout.d();z++) {
+					for (int x = 0;x<layout.w();x++) {
+						str.append(Integer.toHexString(layout.get(x, y, z)));
+					}
+					if (z<layout.d()-1) str.append(" ");
 				}
 				str.append("\n");
 			}
-			if (z<layout.d()-1) {
-				for (int i = 0;i<layout.w();i++) str.append("-");
-				str.append("\n");
+		}
+		else {
+			for (int z = 0;z<layout.d();z++) {
+				for (int y = 0;y<layout.h();y++) {
+					for (int x = 0;x<layout.w();x++) {
+						str.append(Integer.toHexString(layout.get(x, y, z)));
+					}
+					str.append("\n");
+				}
+				if (z<layout.d()-1) {
+					for (int i = 0;i<layout.w();i++) str.append("-");
+					str.append("\n");
+				}
 			}
 		}
 		return str.toString();
+	}
+	
+	public boolean isContinuous() {
+		for (int z = 0;z<d();z++) {
+			for (int y = 0;y<h();y++) {
+				for (int x = 0;x<w();x++) {
+					if (get(x, y, z)==0) continue;
+					boolean hasNeighbor = false;
+					if (inBounds(x+1, y, z)&&get(x+1, y, z)!=0) hasNeighbor = true;
+					if (inBounds(x, y+1, z)&&get(x, y+1, z)!=0) hasNeighbor = true;
+					if (inBounds(x, y, z+1)&&get(x, y, z+1)!=0) hasNeighbor = true;
+					if (inBounds(x-1, y, z)&&get(x-1, y, z)!=0) hasNeighbor = true;
+					if (inBounds(x, y-1, z)&&get(x, y-1, z)!=0) hasNeighbor = true;
+					if (inBounds(x, y, z-1)&&get(x, y, z-1)!=0) hasNeighbor = true;
+					if (!hasNeighbor) return false;
+				}
+			}
+		}
+		return true;
 	}
 }

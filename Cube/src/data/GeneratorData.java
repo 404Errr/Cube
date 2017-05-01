@@ -1,7 +1,7 @@
 package data;
 
 public interface GeneratorData {
-	boolean MAKE_PIECES = false, COMPACT = true;
+	boolean MAKE_PIECES = false, COMPACT = true, HORZ = true;
 	boolean PRINT_PATH = false;
 
 	boolean SAVE = false;
@@ -20,11 +20,11 @@ public interface GeneratorData {
 	boolean CHECK_FLAT = true;
 	boolean CHECK_TOO_MANY_ON_PLANE = true;
 	int BORING_PLANE_COUNT = (int) (PIECE_SIZE_MAX-(Math.ceil((PIECE_SIZE_MAX-PIECE_SIZE_MIN)/2f)));
-	boolean CHECK_DIAGONAL_COLLISION = true;
-	boolean CHECK_SURROUNDED_COLLISION = true;
-	boolean CHECK_2D_CLUSTERS = true;
+	boolean CHECK_DIAGONAL_COLLISION = false;
+	boolean CHECK_SURROUNDED_COLLISION = false;
+	boolean CHECK_2D_CLUSTERS = false;
 	int MAX_2D_CLUSTERS = 1;//(int) ((((MainData.WIDTH+MainData.HEIGHT+MainData.DEPTH)/3f)-3)*3)+1;
-	boolean CHECK_3D_CLUSTERS = true;
+	boolean CHECK_3D_CLUSTERS = false;
 	int MAX_3D_CLUSTER_SIZE = 5;
 	boolean CHECK_IDENTICAL = false;
 
