@@ -115,7 +115,7 @@ public class Generator implements MainData, GeneratorData {
 			if (CHECK_PRINT) System.out.println("collision");
 			return false;
 		}
-		if (MAX_2D_CLUSTERS>ZERO&&has2DClusters()) {
+		if (CHECK_2D_CLUSTERS==T&&has2DClusters()) {
 			if (CHECK_PRINT) System.out.println("2d");
 			return false;
 		}
