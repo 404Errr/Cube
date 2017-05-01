@@ -4,7 +4,7 @@ public interface GeneratorData {
 	boolean MAKE_PIECES = false, COMPACT = true;
 	boolean PRINT_PATH = false;
 
-	boolean SAVE = true;
+	boolean SAVE = false;
 	String PATH = "src/cubes";
 
 	float PIECE_COUNT_RATIO = ((MainData.WIDTH+MainData.HEIGHT+MainData.DEPTH)/3f)*2-1;

@@ -1,5 +1,6 @@
 package main;
 
+import allPieces.AllPieces;
 import converter.Converter;
 import data.Data;
 import data.MainData;
@@ -10,7 +11,8 @@ public class CubeMain implements MainData, Data {
 //	private static final int FUNCTION = SOLVE;
 	private static final int FUNCTION = GENERATE;
 //	private static final int FUNCTION = CONVERT;
-	private static final int REPEAT = 0;
+//	private static final int FUNCTION = ALL;
+	private static final int REPEAT = 25;
 
 	public static void main(String[] args) {
 		switch (FUNCTION) {
@@ -26,6 +28,10 @@ public class CubeMain implements MainData, Data {
 			break;
 		case CONVERT:
 			Converter.convert();
+			break;
+		case ALL:
+			System.out.println("Generating All...");
+			AllPieces.generate();
 			break;
 		default:
 			System.out.println("Invalid function.");
