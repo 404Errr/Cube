@@ -21,6 +21,7 @@ import main.Pointer;
 public class Generator implements MainData, GeneratorData {
 	private static boolean T = true;
 
+	private static Random rand = new Random();
 	private static Move net;
 	private static NavigateableLayout cube;
 	private static Pointer pointer;
@@ -38,18 +39,15 @@ public class Generator implements MainData, GeneratorData {
 	}
 
 	private static void gen() {
-		Random rand = new Random();
 		List<Integer> colors = null;
 		int colorI = 0;
 		boolean reset = true, full;
 		List<Move> moves = new ArrayList<>(Arrays.asList(new Move(1, 0, 0), new Move(0, 1, 0), new Move(0, 0, 1), new Move(-1, 0, 0), new Move(0, -1, 0), new Move(0, 0, -1)));
 		StringBuilder path = null;
-		
 		do {
 			if (reset) {
 				path = new StringBuilder();
 				reset = false;
-				
 				net = new Move(0, 0, 0);
 				cube = new NavigateableLayout(WIDTH, HEIGHT, DEPTH);
 				pointer = new Pointer(cube.w()/2, cube.h()/2, cube.d()/2);
@@ -57,9 +55,8 @@ public class Generator implements MainData, GeneratorData {
 				colorI = 0;
 			}
 			boolean couldMove = false;
-//			Collections.shuffle(moves);
+			scrambleMoves(moves);
 			Collections.sort(moves);
-//			Collections.swap(moves, rand.nextInt(moves.size()), rand.nextInt(moves.size()));
 			for (int i = 0;i<moves.size();i++) {
 				Move move = moves.get(i);
 				Pointer tempPointer = pointer.getMoved(move.getX(), move.getY(), move.getZ());
@@ -84,7 +81,11 @@ public class Generator implements MainData, GeneratorData {
 			if (full&&!(isValid())) reset = true;
 		} while (reset||!full);
 		if (PRINT_PATH==T) System.out.println(path);
-		System.out.println(net);
+	}
+
+	private static void scrambleMoves(List<Move> moves) {
+		int randInt = rand.nextInt(moves.size());
+		Collections.swap(moves, randInt, moves.size()-1-randInt);
 	}
 
 	private static List<Integer> getColorList() {
