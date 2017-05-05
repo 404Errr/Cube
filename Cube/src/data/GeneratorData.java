@@ -24,7 +24,7 @@ public interface GeneratorData {
 	boolean CHECK_SURROUNDED_COLLISION = true;
 	boolean CHECK_2D_CLUSTERS = true;
 	int MAX_2D_CLUSTERS = 0;//1;//(int) ((((MainData.WIDTH+MainData.HEIGHT+MainData.DEPTH)/3f)-3)*3)+1;
-	boolean CHECK_3D_CLUSTERS = true;
+	boolean CHECK_3D_CLUSTERS = false;
 	int MAX_3D_CLUSTER_SIZE = 5;
 	boolean CHECK_IDENTICAL = false;
 
