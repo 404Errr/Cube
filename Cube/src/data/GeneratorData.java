@@ -15,7 +15,7 @@ public interface GeneratorData {
 	int PIECE_SIZE_MAX = (int) (Math.ceil((MainData.WIDTH*MainData.HEIGHT*MainData.DEPTH)/(float) PIECE_COUNT)+PIECE_SIZE_MAX_OFFSET);
 
 	boolean CHECK_PRINT = false;
-	boolean RUN_CHECKS = true;
+	boolean RUN_CHECKS = false;
 
 	boolean CHECK_FLAT = true;
 	boolean CHECK_TOO_MANY_ON_PLANE = true;

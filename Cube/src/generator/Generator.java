@@ -22,7 +22,7 @@ public class Generator implements MainData, GeneratorData {
 	private static boolean T = true;
 
 	private static Random rand = new Random();
-	private static Move net;
+//	private static Move net;
 	private static NavigateableLayout cube;
 	private static Pointer pointer;
 	private static StringBuilder log = new StringBuilder();
@@ -43,12 +43,13 @@ public class Generator implements MainData, GeneratorData {
 		int colorI = 0;
 		boolean reset = true, full;
 		List<Move> moves = new ArrayList<>(Arrays.asList(new Move(1, 0, 0), new Move(0, 1, 0), new Move(0, 0, 1), new Move(-1, 0, 0), new Move(0, -1, 0), new Move(0, 0, -1)));
+//		initScramble();
 		StringBuilder path = null;
 		do {
 			if (reset) {
 				path = new StringBuilder();
 				reset = false;
-				net = new Move(0, 0, 0);
+//				net = new Move(0, 0, 0);
 				cube = new NavigateableLayout(WIDTH, HEIGHT, DEPTH);
 				pointer = new Pointer(cube.w()/2, cube.h()/2, cube.d()/2);
 				colors = getColorList();
@@ -56,13 +57,13 @@ public class Generator implements MainData, GeneratorData {
 			}
 			boolean couldMove = false;
 			scrambleMoves(moves);
-			Collections.sort(moves);
+//			Collections.sort(moves);
 			for (int i = 0;i<moves.size();i++) {
 				Move move = moves.get(i);
 				Pointer tempPointer = pointer.getMoved(move.getX(), move.getY(), move.getZ());
 				if (cube.inBounds(tempPointer)&&((cube.get(tempPointer)==colors.get(colorI)&&rand.nextBoolean())||!cube.isOccupied(tempPointer))) {
 					pointer = tempPointer;
-					net.add(move);
+//					net.add(move);
 					couldMove = true;
 					break;
 				}
@@ -83,8 +84,31 @@ public class Generator implements MainData, GeneratorData {
 		if (PRINT_PATH==T) System.out.println(path);
 	}
 
+//	private static List<Integer> scrambleIs;
+//	private static int scrambleI;
+//
+//	private static void initScramble() {
+//		scrambleIs = new ArrayList<>();
+//		int i = 0;
+//		while (scrambleIs.size()<SCRAMBLE_LENGTH) {
+//			scrambleIs.add(i++);
+//			if (i>5) i = 0;
+//		}
+//		System.out.println(scrambleIs);
+//	}
+//
+//	private static int nextI() {
+//		scrambleI++;
+//		if (scrambleI>scrambleIs.size()-1) {
+//			scrambleI = 0;
+//			Collections.shuffle(scrambleIs);
+//		}
+//		return scrambleIs.get(scrambleI);
+//	}
+
 	private static void scrambleMoves(List<Move> moves) {
 		int randInt = rand.nextInt(moves.size());
+//		int randInt = nextI();
 		Collections.swap(moves, randInt, moves.size()-1-randInt);
 	}
 
@@ -360,10 +384,10 @@ public class Generator implements MainData, GeneratorData {
 			e.printStackTrace();
 		}
 	}
-
-	public static Move getNet() {
-		return net;
-	}
+//
+//	public static Move getNet() {
+//		return net;
+//	}
 }
 //	top-bottom/left-right/back-front
 //	private static final int[][] OVERHANGS = {{1,0}, {1,0,0}, {0,1,0}, {1,1,0}};

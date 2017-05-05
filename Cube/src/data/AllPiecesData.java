@@ -1,6 +1,6 @@
 package data;
 
 public interface AllPiecesData {
-	int CONSTRAINT = 3;
-	int SIZE = 4;
+	int BOUND = 3;
+	int SIZE = 5;
 }

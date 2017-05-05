@@ -9,9 +9,9 @@ import solver.Solver;
 
 public class CubeMain implements MainData, Data {
 //	private static final int FUNCTION = SOLVE;
-	private static final int FUNCTION = GENERATE;
+//	private static final int FUNCTION = GENERATE;
 //	private static final int FUNCTION = CONVERT;
-//	private static final int FUNCTION = ALL;
+	private static final int FUNCTION = ALL;
 	private static final int REPEAT = 0;
 
 	public static void main(String[] args) {
