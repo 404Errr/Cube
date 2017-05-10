@@ -73,16 +73,16 @@ public class Stl implements StlData {
 					for (int x = 0;x<piece.w();x++) {
 						int color = p+1;
 						if (piece.get(x, y, z)==color) {
-							boolean[] neighbors = new boolean[6];
+							/*boolean[] neighbors = new boolean[6];
 							neighbors[U] = piece.inBounds(x, y-1, z)&&piece.get(x, y-1, z)!=0;
 							neighbors[D] = piece.inBounds(x, y+1, z)&&piece.get(x, y+1, z)!=0;
 							neighbors[L] = piece.inBounds(x-1, y, z)&&piece.get(x-1, y, z)!=0;
 							neighbors[R] = piece.inBounds(x+1, y, z)&&piece.get(x+1, y, z)!=0;
 							neighbors[F] = piece.inBounds(x, y, z+1)&&piece.get(x, y, z+1)!=0;				
 							neighbors[B] = piece.inBounds(x, y, z-1)&&piece.get(x, y, z-1)!=0;
-							
-							System.out.println(x+" "+y+" "+z+"\t"+Arrays.toString(neighbors));
-							triangles.addAll(getCubie(x, y, z, CUBIE_SIZE, CUBIE_CLEARANCE, neighbors));
+							*/
+							//System.out.println(x+" "+y+" "+z+"\t"+Arrays.toString(neighbors));
+							triangles.addAll(getCubie(x, y, z, CUBIE_SIZE, CUBIE_CLEARANCE/*, neighbors*/));
 						}
 					}
 				}
@@ -106,7 +106,7 @@ public class Stl implements StlData {
 	}
 
 	private static final int U = 0, D = 1, L = 2, R = 3, B = 4, F = 5;
-	private static List<Triangle> getCubie(int xO, int yO, int zO, float s, float c, boolean[] n) {
+	private static List<Triangle> getCubie(int xO, int yO, int zO, float s, float c/*, boolean[] n*/) {
 		List<Triangle> triangles = new ArrayList<>();
 		float x = xO*s, y = yO*s, z = zO*s;
 		float uO = (n[U])?0:-c, dO = (n[D])?0:c, lO = (n[L])?0:c, rO = (n[R])?0:-c, fO = (n[F])?0:-c, bO = (n[B])?0:c;
