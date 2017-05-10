@@ -67,6 +67,7 @@ public class Stl implements StlData {
 		//TODO rotate piece
 		for (int p = 0;p<pieceCount;p++) {
 			Layout piece = pieces.get(p);
+			System.out.println(piece);
 			List<Triangle> triangles = new ArrayList<>();
 			for (int z = 0;z<piece.d();z++) {
 				for (int y = 0;y<piece.h();y++) {
@@ -82,12 +83,12 @@ public class Stl implements StlData {
 							neighbors[B] = piece.inBounds(x, y, z-1)&&piece.get(x, y, z-1)!=0;
 							*/
 							//System.out.println(x+" "+y+" "+z+"\t"+Arrays.toString(neighbors));
-							triangles.addAll(getCubie(x, y, z, CUBIE_SIZE, CUBIE_CLEARANCE/*, neighbors*/));
+							triangles.addAll(getRectPrism(x, y, z, 1, 1, 1, CUBIE_SIZE, CUBIE_CLEARANCE/*, neighbors*/));
 						}
 					}
 				}
 			}
-			System.out.println(pieces.get(p)+"\n"+triangles.size()+"\n\n");
+			System.out.println(triangles.size()+"\n\n");
 			StringBuilder stl = new StringBuilder();
 			stl.append("solid ascii\n");
 			for (int t = 0;t<triangles.size();t++) {
@@ -104,30 +105,30 @@ public class Stl implements StlData {
 			Util.toFile(cubePath+"_"+(p+1), stl.toString());
 		}
 	}
-
-	private static final int U = 0, D = 1, L = 2, R = 3, B = 4, F = 5;
-	private static List<Triangle> getCubie(int xO, int yO, int zO, float s, float c/*, boolean[] n*/) {
+look over here
+//	private static final int U = 0, D = 1, L = 2, R = 3, B = 4, F = 5;
+	private static List<Triangle> getRectPrism(int xO, int yO, int zO, float xS, float yS, float zS, float s, float c/*, boolean[] n*/) {
 		List<Triangle> triangles = new ArrayList<>();
 		float x = xO*s, y = yO*s, z = zO*s;
-		float uO = (n[U])?0:-c, dO = (n[D])?0:c, lO = (n[L])?0:c, rO = (n[R])?0:-c, fO = (n[F])?0:-c, bO = (n[B])?0:c;
+//		float c = (n[U])?0:-c, dO = (n[D])?0:c, lO = (n[L])?0:c, rO = (n[R])?0:-c, fO = (n[F])?0:-c, bO = (n[B])?0:c;
 		//up
-		triangles.add(new Triangle(new Vertex(x+lO, y+uO, z+bO), new Vertex(x+s+rO, y+uO, z+bO), new Vertex(x+s+rO, y+uO, z+s+fO)));
-		triangles.add(new Triangle(new Vertex(x+lO, y+uO, z+bO), new Vertex(x+lO, y+uO, z+s+fO), new Vertex(x+s+rO, y+uO, z+s+fO)));
-		//down
-		triangles.add(new Triangle(new Vertex(x+lO, y+s+dO, z+bO), new Vertex(x+s+rO, y+s+dO, z+bO), new Vertex(x+s+rO, y+s+dO, z+s+fO)));
-		triangles.add(new Triangle(new Vertex(x+lO, y+s+dO, z+bO), new Vertex(x+lO, y+s+dO, z+s+fO), new Vertex(x+s+rO, y+s+dO, z+s+fO)));
+		triangles.add(new Triangle(new Vertex(x+c, y+c, z+c), new Vertex(x*xS-c, y+c, z+c), new Vertex(x*xS-c, y+c, z*zS-c)));
+		triangles.add(new Triangle(new Vertex(x+c, y+c, z+c), new Vertex(x+c, y+c, z*zS-c), new Vertex(x*xS-c, y+c, z*zS-c)));
+		//cwn
+		triangles.add(new Triangle(new Vertex(x+c, y*yS-c, z+c), new Vertex(x*xS-c, y*yS-c, z+c), new Vertex(x*xS-c, y*yS-c, z*zS-c)));
+		triangles.add(new Triangle(new Vertex(x+c, y*yS-c, z+c), new Vertex(x+c, y*yS-c, z*zS-c), new Vertex(x*xS-c, y*yS-c, z*zS-c)));
 		//left
-		triangles.add(new Triangle(new Vertex(x+lO, y+uO, z+bO), new Vertex(x+lO, y+s+dO, z+bO), new Vertex(x+lO, y+s+dO, z+s+fO)));
-		triangles.add(new Triangle(new Vertex(x+lO, y+uO, z+bO), new Vertex(x+lO, y+uO, z+s+fO), new Vertex(x+lO, y+s+dO, z+s+fO)));
+		triangles.add(new Triangle(new Vertex(x+c, y+c, z+c), new Vertex(x+c, y*yS-c, z+c), new Vertex(x+c, y*yS-c, z*zS-c)));
+		triangles.add(new Triangle(new Vertex(x+c, y+c, z+c), new Vertex(x+c, y+c, z*zS-c), new Vertex(x+c, y*yS-c, z*zS-c)));
 		//right
-		triangles.add(new Triangle(new Vertex(x+s+rO, y+uO, z+bO), new Vertex(x+s+rO, y+s+dO, z+bO), new Vertex(x+s+rO, y+s+dO, z+s+fO)));
-		triangles.add(new Triangle(new Vertex(x+s+rO, y+uO, z+bO), new Vertex(x+s+rO, y+uO, z+s+fO), new Vertex(x+s+rO, y+s+dO, z+s+fO)));
+		triangles.add(new Triangle(new Vertex(x*xS-c, y+c, z+c), new Vertex(x*xS-c, y*yS-c, z+c), new Vertex(x*xS-c, y*yS-c, z*zS-c)));
+		triangles.add(new Triangle(new Vertex(x*xS-c, y+c, z+c), new Vertex(x*xS-c, y+c, z*zS-c), new Vertex(x*xS-c, y*yS-c, z*zS-c)));
 		//back
-		triangles.add(new Triangle(new Vertex(x+lO, y+uO, z+bO), new Vertex(x+lO, y+s+dO, z+bO), new Vertex(x+s+rO, y+s+dO, z+bO)));
-		triangles.add(new Triangle(new Vertex(x+lO, y+uO, z+bO), new Vertex(x+s+rO, y+uO, z+bO), new Vertex(x+s+rO, y+s+dO, z+bO)));
-		//front
-		triangles.add(new Triangle(new Vertex(x+lO, y+uO, z+s+fO), new Vertex(x+lO, y+s+dO, z+s+fO), new Vertex(x+s+rO, y+s+dO, z+s+fO)));
-		triangles.add(new Triangle(new Vertex(x+lO, y+uO, z+s+fO), new Vertex(x+s+rO, y+uO, z+s+fO), new Vertex(x+s+rO, y+s+dO, z+s+fO)));
+		triangles.add(new Triangle(new Vertex(x+c, y+c, z+c), new Vertex(x+c, y*yS-c, z+c), new Vertex(x*xS-c, y*yS-c, z+c)));
+		triangles.add(new Triangle(new Vertex(x+c, y+c, z+c), new Vertex(x*xS-c, y+c, z+c), new Vertex(x*xS-c, y*yS-c, z+c)));
+		//fcnt
+		triangles.add(new Triangle(new Vertex(x+c, y+c, z*zS-c), new Vertex(x+c, y*yS-c, z*zS-c), new Vertex(x*xS-c, y*yS-c, z*zS-c)));
+		triangles.add(new Triangle(new Vertex(x+c, y+c, z*zS-c), new Vertex(x*xS-c, y+c, z*zS-c), new Vertex(x*xS-c, y*yS-c, z*zS-c)));
 		return triangles;
 	}
 }
