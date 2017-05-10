@@ -1,7 +1,10 @@
 package data;
 
 public interface StlData {
-	String PATH = "stl/test";
-	String ROOT = "src/";
+	float CUBIE_SIZE = 2.5f;//mm
+	int SIZE = 3;
+
+	String PATH = "test";
+	String ROOT = "src/stlcubes";
 
 }

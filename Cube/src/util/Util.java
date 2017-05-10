@@ -1,12 +1,30 @@
 package util;
 
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Util {
+	public static void toFile(String path, String toAdd) {
+		try {
+			Writer writer = new OutputStreamWriter(new FileOutputStream(path+".stl"), Charset.forName("UTF-8"));
+			writer.write(toAdd);
+			writer.close();
+//			PrintWriter pw = new PrintWriter(new FileWriter(path, false));
+//			pw.write(toAdd);
+//			pw.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	public static List<int[]> getPermutations(int length) {
 		List<int[]> permutations = new ArrayList<>();
 		int[] array = new int[length], c = new int[length];
@@ -46,7 +64,7 @@ public class Util {
 		}
 		return newList;
 	}
-	
+
 	public static int[][] parseIntArrayFromFile(String path) {
 		String in = fileToString(path);
 		System.out.println(path+" loaded");

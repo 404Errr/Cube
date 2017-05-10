@@ -1,25 +1,27 @@
 package stl;
 
 public class Vertex {
-	private int x, y, z;
+	private float x, y, z;
 
-	public Vertex(int x, int y, int z) {
+	public Vertex(float x, float y, float z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
 
-	public int getX() {
+	public float getX() {
 		return x;
 	}
 
-	public int getY() {
+	public float getY() {
 		return y;
 	}
 
-	public int getZ() {
+	public float getZ() {
 		return z;
 	}
 
-
+	public boolean equals(Vertex other) {
+		return getX()==other.getX()&&getY()==other.getY()&&getZ()==other.getZ();
+	}
 }
