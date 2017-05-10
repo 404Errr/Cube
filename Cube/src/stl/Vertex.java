@@ -3,6 +3,8 @@ package stl;
 public class Vertex {
 	private float x, y, z;
 
+	public Vertex(int x) {}//FIXME
+
 	public Vertex(float x, float y, float z) {
 		this.x = x;
 		this.y = y;

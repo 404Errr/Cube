@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import data.StlData;
@@ -74,16 +73,13 @@ public class Stl implements StlData {
 					for (int x = 0;x<piece.w();x++) {
 						int color = p+1;
 						if (piece.get(x, y, z)==color) {
-							/*boolean[] neighbors = new boolean[6];
-							neighbors[U] = piece.inBounds(x, y-1, z)&&piece.get(x, y-1, z)!=0;
-							neighbors[D] = piece.inBounds(x, y+1, z)&&piece.get(x, y+1, z)!=0;
-							neighbors[L] = piece.inBounds(x-1, y, z)&&piece.get(x-1, y, z)!=0;
-							neighbors[R] = piece.inBounds(x+1, y, z)&&piece.get(x+1, y, z)!=0;
-							neighbors[F] = piece.inBounds(x, y, z+1)&&piece.get(x, y, z+1)!=0;				
-							neighbors[B] = piece.inBounds(x, y, z-1)&&piece.get(x, y, z-1)!=0;
-							*/
-							//System.out.println(x+" "+y+" "+z+"\t"+Arrays.toString(neighbors));
-							triangles.addAll(getRectPrism(x, y, z, 1, 1, 1, CUBIE_SIZE, CUBIE_CLEARANCE/*, neighbors*/));
+							if (piece.inBounds(x, y-1, z)&&piece.get(x, y-1, z)!=0) triangles.addAll(getRectPrism(x, y-1, z, 1, 2, 1, CUBIE_SIZE, CUBIE_CLEARANCE));
+							if (piece.inBounds(x, y+1, z)&&piece.get(x, y+1, z)!=0) triangles.addAll(getRectPrism(x, y, z, 1, 2, 1, CUBIE_SIZE, CUBIE_CLEARANCE));
+							if (piece.inBounds(x-1, y, z)&&piece.get(x-1, y, z)!=0) triangles.addAll(getRectPrism(x-1, y, z, 2, 1, 1, CUBIE_SIZE, CUBIE_CLEARANCE));
+							if (piece.inBounds(x+1, y, z)&&piece.get(x+1, y, z)!=0) triangles.addAll(getRectPrism(x, y, z, 2, 1, 1, CUBIE_SIZE, CUBIE_CLEARANCE));
+							if (piece.inBounds(x, y, z-1)&&piece.get(x, y, z-1)!=0) triangles.addAll(getRectPrism(x, y, z-1, 1, 1, 2, CUBIE_SIZE, CUBIE_CLEARANCE));
+							if (piece.inBounds(x, y, z+1)&&piece.get(x, y, z+1)!=0) triangles.addAll(getRectPrism(x, y, z, 1, 1, 2, CUBIE_SIZE, CUBIE_CLEARANCE));
+							triangles.addAll(getRectPrism(x, y, z, 1, 1, 1, CUBIE_SIZE, CUBIE_CLEARANCE));
 						}
 					}
 				}
@@ -96,7 +92,7 @@ public class Stl implements StlData {
 				stl.append("  facet normal 0.0e+000 0.0e+000 0.0e+000\n");
 				stl.append("    outer loop\n");
 				for (int v = 0;v<vs.length;v++) {
-					stl.append("      vertex   "+vs[v].getX()+"e+000 "+vs[v].getY()+"e+000 "+vs[v].getZ()+"e+000\n");
+					stl.append("      vertex   "+vs[v].getX()+"e+000 "+-vs[v].getZ()+"e+000 "+-vs[v].getY()+"e+000\n");
 				}
 				stl.append("    endloop\n");
 				stl.append("  endfacet\n");
@@ -105,30 +101,33 @@ public class Stl implements StlData {
 			Util.toFile(cubePath+"_"+(p+1), stl.toString());
 		}
 	}
-look over here
-//	private static final int U = 0, D = 1, L = 2, R = 3, B = 4, F = 5;
-	private static List<Triangle> getRectPrism(int xO, int yO, int zO, float xS, float yS, float zS, float s, float c/*, boolean[] n*/) {
-		List<Triangle> triangles = new ArrayList<>();
-		float x = xO*s, y = yO*s, z = zO*s;
-//		float c = (n[U])?0:-c, dO = (n[D])?0:c, lO = (n[L])?0:c, rO = (n[R])?0:-c, fO = (n[F])?0:-c, bO = (n[B])?0:c;
-		//up
-		triangles.add(new Triangle(new Vertex(x+c, y+c, z+c), new Vertex(x*xS-c, y+c, z+c), new Vertex(x*xS-c, y+c, z*zS-c)));
-		triangles.add(new Triangle(new Vertex(x+c, y+c, z+c), new Vertex(x+c, y+c, z*zS-c), new Vertex(x*xS-c, y+c, z*zS-c)));
-		//cwn
-		triangles.add(new Triangle(new Vertex(x+c, y*yS-c, z+c), new Vertex(x*xS-c, y*yS-c, z+c), new Vertex(x*xS-c, y*yS-c, z*zS-c)));
-		triangles.add(new Triangle(new Vertex(x+c, y*yS-c, z+c), new Vertex(x+c, y*yS-c, z*zS-c), new Vertex(x*xS-c, y*yS-c, z*zS-c)));
-		//left
-		triangles.add(new Triangle(new Vertex(x+c, y+c, z+c), new Vertex(x+c, y*yS-c, z+c), new Vertex(x+c, y*yS-c, z*zS-c)));
-		triangles.add(new Triangle(new Vertex(x+c, y+c, z+c), new Vertex(x+c, y+c, z*zS-c), new Vertex(x+c, y*yS-c, z*zS-c)));
-		//right
-		triangles.add(new Triangle(new Vertex(x*xS-c, y+c, z+c), new Vertex(x*xS-c, y*yS-c, z+c), new Vertex(x*xS-c, y*yS-c, z*zS-c)));
-		triangles.add(new Triangle(new Vertex(x*xS-c, y+c, z+c), new Vertex(x*xS-c, y+c, z*zS-c), new Vertex(x*xS-c, y*yS-c, z*zS-c)));
-		//back
-		triangles.add(new Triangle(new Vertex(x+c, y+c, z+c), new Vertex(x+c, y*yS-c, z+c), new Vertex(x*xS-c, y*yS-c, z+c)));
-		triangles.add(new Triangle(new Vertex(x+c, y+c, z+c), new Vertex(x*xS-c, y+c, z+c), new Vertex(x*xS-c, y*yS-c, z+c)));
-		//fcnt
-		triangles.add(new Triangle(new Vertex(x+c, y+c, z*zS-c), new Vertex(x+c, y*yS-c, z*zS-c), new Vertex(x*xS-c, y*yS-c, z*zS-c)));
-		triangles.add(new Triangle(new Vertex(x+c, y+c, z*zS-c), new Vertex(x*xS-c, y+c, z*zS-c), new Vertex(x*xS-c, y*yS-c, z*zS-c)));
-		return triangles;
+
+	private static List<Triangle> getRectPrism(int x, int y, int z, int xS, int yS, int zS, float s, float c) {
+		List<Triangle> tris = new ArrayList<>();
+		x*=s;y*=s;z*=s;
+		xS*=s;yS*=s;zS*=s;
+		Vertex[][][] v = {
+			{
+				{new Vertex(x+c, y+c, z+c), new Vertex(x+xS-c, y+c, z+c)},
+				{new Vertex(x+c, y+yS-c, z+c), new Vertex(x+xS-c, y+yS-c, z+c)},
+			},
+			{
+				{new Vertex(x+c, y+c, z+zS-c), new Vertex(x+xS-c, y+c, z+zS-c)},
+				{new Vertex(x+c, y+yS-c, z+zS-c), new Vertex(x+xS-c, y+yS-c, z+zS-c)},
+			},
+		};
+		tris.add(new Triangle(v[1][0][1], v[1][0][0], v[1][1][1]));
+		tris.add(new Triangle(v[1][1][1], v[1][0][0], v[1][1][0]));
+		tris.add(new Triangle(v[0][0][1], v[1][0][1], v[0][1][1]));
+		tris.add(new Triangle(v[0][1][1], v[1][0][1], v[1][1][1]));
+		tris.add(new Triangle(v[0][0][0], v[0][0][1], v[0][1][0]));
+		tris.add(new Triangle(v[0][1][0], v[0][0][1], v[0][1][1]));
+		tris.add(new Triangle(v[1][0][0], v[0][0][0], v[1][1][0]));
+		tris.add(new Triangle(v[1][1][0], v[0][0][0], v[0][1][0]));
+		tris.add(new Triangle(v[1][0][0], v[1][0][1], v[0][0][0]));
+		tris.add(new Triangle(v[0][0][0], v[1][0][1], v[0][0][1]));
+		tris.add(new Triangle(v[0][1][0], v[0][1][1], v[1][1][0]));
+		tris.add(new Triangle(v[1][1][0], v[0][1][1], v[1][1][1]));
+		return tris;
 	}
 }
