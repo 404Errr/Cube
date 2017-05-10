@@ -66,21 +66,21 @@ public class Stl implements StlData {
 		System.out.println("pieceCount: "+pieceCount);
 		//TODO rotate piece
 		for (int p = 0;p<pieceCount;p++) {
+			Layout piece = pieces.get(p);
 			List<Triangle> triangles = new ArrayList<>();
-			for (int z = 0;z<cube.d();z++) {
-				for (int y = 0;y<cube.h();y++) {
-					for (int x = 0;x<cube.w();x++) {
+			for (int z = 0;z<piece.d();z++) {
+				for (int y = 0;y<piece.h();y++) {
+					for (int x = 0;x<piece.w();x++) {
 						int color = p+1;
-						if (cube.get(x, y, z)==color) {
-							boolean[] neighbors = {
-								//up down right left back forward
-								cube.inBounds(x, y+1, z)&&cube.get(x, y+1, z)!=0,
-								cube.inBounds(x, y-1, z)&&cube.get(x, y-1, z)!=0,
-								cube.inBounds(x+1, y, z)&&cube.get(x+1, y, z)!=0,
-								cube.inBounds(x-1, y, z)&&cube.get(x-1, y, z)!=0,
-								cube.inBounds(x, y, z+1)&&cube.get(x, y, z+1)!=0,
-								cube.inBounds(x, y, z-1)&&cube.get(x, y, z-1)!=0,					
-							};
+						if (piece.get(x, y, z)==color) {
+							boolean[] neighbors = new boolean[6];
+							neighbors[U] = piece.inBounds(x, y-1, z)&&piece.get(x, y-1, z)!=0;
+							neighbors[D] = piece.inBounds(x, y+1, z)&&piece.get(x, y+1, z)!=0;
+							neighbors[L] = piece.inBounds(x-1, y, z)&&piece.get(x-1, y, z)!=0;
+							neighbors[R] = piece.inBounds(x+1, y, z)&&piece.get(x+1, y, z)!=0;
+							neighbors[F] = piece.inBounds(x, y, z+1)&&piece.get(x, y, z+1)!=0;				
+							neighbors[B] = piece.inBounds(x, y, z-1)&&piece.get(x, y, z-1)!=0;
+							
 							System.out.println(x+" "+y+" "+z+"\t"+Arrays.toString(neighbors));
 							triangles.addAll(getCubie(x, y, z, CUBIE_SIZE, CUBIE_CLEARANCE, neighbors));
 						}
@@ -105,37 +105,29 @@ public class Stl implements StlData {
 		}
 	}
 
-	private static final int U = 0, D = 1, L = 2, R = 3, F = 4, B = 5;
+	private static final int U = 0, D = 1, L = 2, R = 3, B = 4, F = 5;
 	private static List<Triangle> getCubie(int xO, int yO, int zO, float s, float c, boolean[] n) {
 		List<Triangle> triangles = new ArrayList<>();
 		float x = xO*s, y = yO*s, z = zO*s;
 		float uO = (n[U])?0:-c, dO = (n[D])?0:c, lO = (n[L])?0:c, rO = (n[R])?0:-c, fO = (n[F])?0:-c, bO = (n[B])?0:c;
 		//up
-		triangles.add(new Triangle(new Vertex(x, y, z), new Vertex(x+s, y, z), new Vertex(x+s, y, z+s)));
-		triangles.add(new Triangle(new Vertex(x, y, z), new Vertex(x, y, z+s), new Vertex(x+s, y, z+s)));
+		triangles.add(new Triangle(new Vertex(x+lO, y+uO, z+bO), new Vertex(x+s+rO, y+uO, z+bO), new Vertex(x+s+rO, y+uO, z+s+fO)));
+		triangles.add(new Triangle(new Vertex(x+lO, y+uO, z+bO), new Vertex(x+lO, y+uO, z+s+fO), new Vertex(x+s+rO, y+uO, z+s+fO)));
 		//down
-		triangles.add(new Triangle(new Vertex(x, y+s, z), new Vertex(x+s, y+s, z), new Vertex(x+s, y+s, z+s)));
-		triangles.add(new Triangle(new Vertex(x, y+s, z), new Vertex(x, y+s, z+s), new Vertex(x+s, y+s, z+s)));
+		triangles.add(new Triangle(new Vertex(x+lO, y+s+dO, z+bO), new Vertex(x+s+rO, y+s+dO, z+bO), new Vertex(x+s+rO, y+s+dO, z+s+fO)));
+		triangles.add(new Triangle(new Vertex(x+lO, y+s+dO, z+bO), new Vertex(x+lO, y+s+dO, z+s+fO), new Vertex(x+s+rO, y+s+dO, z+s+fO)));
 		//left
-		triangles.add(new Triangle(new Vertex(x, y, z), new Vertex(x, y+s, z), new Vertex(x, y+s, z+s)));
-		triangles.add(new Triangle(new Vertex(x, y, z), new Vertex(x, y, z+s), new Vertex(x, y+s, z+s)));
-		look over here
-		//right TODO
-//		triangles.add(new Triangle(new Vertex(x, y, z), new Vertex(x, y+s, z), new Vertex(x, y+s, z+s)));
-//		triangles.add(new Triangle(new Vertex(x, y, z), new Vertex(x, y, z+s), new Vertex(x, y+s, z+s)));
-		
-//		triangles.add(new Triangle(new Vertex(x, y, z), new Vertex(x+s, y, z), new Vertex(x, y, z+s)));
-//		triangles.add(new Triangle(new Vertex(x, y, z+s), new Vertex(x+s, y, z), new Vertex(x+s, y, z+s)));
-//		triangles.add(new Triangle(new Vertex(x, y, z+s), new Vertex(x+s, y, z+s), new Vertex(x+s, y+s, z+s)));
-//		triangles.add(new Triangle(new Vertex(x, y+s, z), new Vertex(x, y, z), new Vertex(x, y+s, z+s)));
-//		triangles.add(new Triangle(new Vertex(x, y+s, z+s), new Vertex(x, y, z), new Vertex(x, y, z+s)));
-//		triangles.add(new Triangle(new Vertex(x, y+s, z+s), new Vertex(x+s, y, z+s), new Vertex(x+s, y+s, z+s)));
-//		triangles.add(new Triangle(new Vertex(x+s, y+s, z), new Vertex(x, y+s, z), new Vertex(x+s, y+s, z+s)));
-//		triangles.add(new Triangle(new Vertex(x+s, y+s, z+s), new Vertex(x, y+s, z), new Vertex(x, y+s, z+s)));
-//		triangles.add(new Triangle(new Vertex(x+s, y, z), new Vertex(x+s, y+s, z), new Vertex(x+s, y, z+s)));
-//		triangles.add(new Triangle(new Vertex(x+s, y, z+s), new Vertex(x+s, y+s, z), new Vertex(x+s, y+s, z+s)));
-//		triangles.add(new Triangle(new Vertex(x+s, y, z), new Vertex(x, y, z), new Vertex(x+s, y+s, z)));
-//		triangles.add(new Triangle(new Vertex(x+s, y+s, z), new Vertex(x, y, z), new Vertex(x, y+s, z)));
+		triangles.add(new Triangle(new Vertex(x+lO, y+uO, z+bO), new Vertex(x+lO, y+s+dO, z+bO), new Vertex(x+lO, y+s+dO, z+s+fO)));
+		triangles.add(new Triangle(new Vertex(x+lO, y+uO, z+bO), new Vertex(x+lO, y+uO, z+s+fO), new Vertex(x+lO, y+s+dO, z+s+fO)));
+		//right
+		triangles.add(new Triangle(new Vertex(x+s+rO, y+uO, z+bO), new Vertex(x+s+rO, y+s+dO, z+bO), new Vertex(x+s+rO, y+s+dO, z+s+fO)));
+		triangles.add(new Triangle(new Vertex(x+s+rO, y+uO, z+bO), new Vertex(x+s+rO, y+uO, z+s+fO), new Vertex(x+s+rO, y+s+dO, z+s+fO)));
+		//back
+		triangles.add(new Triangle(new Vertex(x+lO, y+uO, z+bO), new Vertex(x+lO, y+s+dO, z+bO), new Vertex(x+s+rO, y+s+dO, z+bO)));
+		triangles.add(new Triangle(new Vertex(x+lO, y+uO, z+bO), new Vertex(x+s+rO, y+uO, z+bO), new Vertex(x+s+rO, y+s+dO, z+bO)));
+		//front
+		triangles.add(new Triangle(new Vertex(x+lO, y+uO, z+s+fO), new Vertex(x+lO, y+s+dO, z+s+fO), new Vertex(x+s+rO, y+s+dO, z+s+fO)));
+		triangles.add(new Triangle(new Vertex(x+lO, y+uO, z+s+fO), new Vertex(x+s+rO, y+uO, z+s+fO), new Vertex(x+s+rO, y+s+dO, z+s+fO)));
 		return triangles;
 	}
 }
