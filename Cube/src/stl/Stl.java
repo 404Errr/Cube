@@ -47,12 +47,12 @@ public class Stl implements StlData {
 		}
 		Layout cube = new Layout(raw);
 		List<Layout> pieces = new ArrayList<>();
-		for (int i = 0;i<pieceCount;i++) {
+		for (int p = 0;p<pieceCount;p++) {
 			int[][][] pieceLayout = new int[cube.d()][cube.h()][cube.w()];
 			for (int z = 0;z<cube.d();z++) {
 				for (int y = 0;y<cube.h();y++) {
 					for (int x = 0;x<cube.w();x++) {
-						int color = i+1;
+						int color = p+1;
 						if (cube.get(x, y, z)==color) pieceLayout[z][y][x] = cube.get(x, y, z);
 					}
 				}
@@ -65,7 +65,20 @@ public class Stl implements StlData {
 		System.out.println("pieceCount: "+pieceCount);
 		//TODO rotate piece
 		for (int p = 0;p<pieceCount;p++) {
-			Layout piece = pieces.get(p);
+			Layout piece = pieces.get(p), bestOrientation = piece.clone();
+			for (int o = 0;o<6;o++) {
+				piece.rotate((o==4)?1:(o==5)?2:0, (o>=1&&o<=4)?1:0, 0);
+				boolean overhangs = false;
+				for (int z = 0;z<piece.d();z++) {
+					for (int x = 0;x<piece.w();x++) {
+						for (int y = 0;y<piece.h();y++) {
+							//TODO check if two above each other look like 010 100 etc
+						}						
+					}
+				}
+				if (!overhangs&&piece.h()<bestOrientation.h()) bestOrientation = piece.clone();
+			}
+			piece = bestOrientation;
 			System.out.println(piece);
 			List<Triangle> triangles = new ArrayList<>();
 			for (int z = 0;z<piece.d();z++) {
@@ -79,7 +92,7 @@ public class Stl implements StlData {
 							if (piece.inBounds(x+1, y, z)&&piece.get(x+1, y, z)!=0) triangles.addAll(getRectPrism(x, y, z, 2, 1, 1, CUBIE_SIZE, CUBIE_CLEARANCE));
 							if (piece.inBounds(x, y, z-1)&&piece.get(x, y, z-1)!=0) triangles.addAll(getRectPrism(x, y, z-1, 1, 1, 2, CUBIE_SIZE, CUBIE_CLEARANCE));
 							if (piece.inBounds(x, y, z+1)&&piece.get(x, y, z+1)!=0) triangles.addAll(getRectPrism(x, y, z, 1, 1, 2, CUBIE_SIZE, CUBIE_CLEARANCE));
-							triangles.addAll(getRectPrism(x, y, z, 1, 1, 1, CUBIE_SIZE, CUBIE_CLEARANCE));
+//							triangles.addAll(getRectPrism(x, y, z, 1, 1, 1, CUBIE_SIZE, CUBIE_CLEARANCE));
 						}
 					}
 				}

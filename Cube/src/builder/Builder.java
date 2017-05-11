@@ -2,7 +2,7 @@ package builder;
 
 public class Builder {
 	public static void build() {
-		Cubie[][][] cube = null;//TODO
+//		Cubie[][][] cube = null;//TODO
 	}
 }
 
